@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		// Base options:
+		"skipLibCheck": true,
+		"target": "es2024",
+		"verbatimModuleSyntax": true,
+		"allowJs": false,
+		"moduleDetection": "force",
+		// Strictness
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		// Type checking, not transpiling
+		"types": ["node"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"lib": ["es2024", "DOM"],
+		"declaration": true,
+		"rootDir": "src",
+		"rootDirs": ["src"],
+		"outDir": "dist"
+	},
+	"include": ["src/index.ts"],
+	"exclude": ["node_modules"]
+}

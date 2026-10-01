@@ -1,0 +1,64 @@
+{
+	"name": "@projectwallace/css-scraper",
+	"version": "0.0.0",
+	"description": "Get all the CSS from a webpage",
+	"keywords": [
+		"css",
+		"scrape",
+		"scraper",
+		"styles"
+	],
+	"homepage": "https://github.com/projectwallace/css-scraper",
+	"license": "MIT",
+	"author": "Bart Veneman <bart@projectwallace.com>",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/projectwallace/css-scraper.git"
+	},
+	"files": [
+		"dist"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"default": "./dist/index.js"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
+	"scripts": {
+		"build": "tsdown",
+		"test": "vitest --coverage",
+		"check": "tsc",
+		"lint": "oxlint && oxfmt --check",
+		"knip": "knip"
+	},
+	"devDependencies": {
+		"@projectwallace/preset-oxlint": "^0.0.11",
+		"@types/node": "^26.0.1",
+		"@vitest/coverage-v8": "^5.0.3",
+		"knip": "^6.31.0",
+		"oxfmt": "^0.71.0",
+		"oxlint": "^1.74.0",
+		"publint": "^0.3.21",
+		"tsdown": "^0.23.0",
+		"typescript": "^7.0.2",
+		"vite": "^8.1.5",
+		"vitest": "^5.0.3"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "11.24.0",
+			"onFail": "download"
+		}
+	},
+	"engines": {
+		"node": ">=20.12.0",
+		"pnpm": ">=11.0.0"
+	},
+	"packageManager": "pnpm@11.24.0"
+}
