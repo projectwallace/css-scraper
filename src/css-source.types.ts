@@ -1,5 +1,7 @@
 type CSSSourceBase = {
-	/** The resolved CSS text for this source, as shipped/authored (not browser-normalized). */
+	/** The resolved CSS text for this source. Network-fetched and `<style>`/`style`
+	 * sources are as shipped; `cssom` and `adopted-stylesheet` sources are
+	 * browser-serialized (e.g. `#881111` becomes `rgb(136, 17, 17)`). */
 	css: string
 	/** The absolute URL this source was found on. For network-fetched sources
 	 * (`link`, `import`), this is the stylesheet's own URL; for sources that
@@ -38,9 +40,16 @@ export type CSSAdoptedStylesheetSource = CSSSourceBase & {
 	type: 'adopted-stylesheet'
 }
 
+/** A `<style>` element's stylesheet whose rules differ from its text content, e.g.
+ * because rules were added via `sheet.insertRule()`. */
+export type CSSCSSOMSource = CSSSourceBase & {
+	type: 'cssom'
+}
+
 export type CSSSource =
 	| CSSLinkSource
 	| CSSImportSource
 	| CSSStyleSource
 	| CSSInlineSource
 	| CSSAdoptedStylesheetSource
+	| CSSCSSOMSource

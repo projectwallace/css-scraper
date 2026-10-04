@@ -25,9 +25,17 @@ afterEach(async () => {
 })
 
 describe('CSSOM-added rules', () => {
-	test('a rule added via sheet.insertRule() is captured as a "cssom" source, as-authored', async () => {
+	test('a rule added via sheet.insertRule() is captured as a "cssom" source', async () => {
 		const result = await scrape_css(page, `${server.url}/cssom/insert-rule/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'cssom/insert-rule'))
+	})
+
+	test('a rule added via insertRule() to a <style> with existing content is captured without repeating that content', async () => {
+		const result = await scrape_css(
+			page,
+			`${server.url}/cssom/insert-rule-existing-content/index.html`,
+		)
+		expect(result).toEqual(load_expected_sources(server, 'cssom/insert-rule-existing-content'))
 	})
 
 	test('a constructed CSSStyleSheet via replaceSync() is captured as an "adopted-stylesheet" source', async () => {
