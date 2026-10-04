@@ -41,6 +41,16 @@ describe('web component adoptedStyleSheets', () => {
 		)
 		expect(result).toEqual([])
 	})
+
+	test('a stylesheet already captured via <link> is not duplicated when also adopted into a shadow root', async () => {
+		const result = await scrape_css(
+			page,
+			`${server.url}/web-components/shadow-adopted-duplicate/index.html`,
+		)
+		const matches = result.filter((source) => source.css.includes('.shadow-adopted-duplicate'))
+		expect(matches).toHaveLength(1)
+		expect(matches[0]).toMatchObject({ type: 'link' })
+	})
 })
 
 describe('web component <link> stylesheets', () => {
@@ -93,10 +103,7 @@ describe('web component @import', () => {
 	})
 
 	test('an @import inside a shadow root <style> is resolved and captured as an "import" source', async () => {
-		const result = await scrape_css(
-			page,
-			`${server.url}/web-components/shadow-import/index.html`,
-		)
+		const result = await scrape_css(page, `${server.url}/web-components/shadow-import/index.html`)
 		expect(css_of(result).join('\n')).toContain('.shadow-import-element')
 		expect(result.some((source) => source.type === 'import')).toBe(true)
 	})
