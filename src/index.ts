@@ -40,12 +40,9 @@ async function walk_css_entries(
 	on_entry: (entry: CSSWalkEntry) => void,
 ): Promise<void> {
 	const entries = await page.evaluate(() => {
-		const found: Array<
-			| { type: 'link'; href: string }
-			| { type: 'inline'; css: string }
-			| { type: 'adopted'; css: string }
-		> = []
+		const found: CSSWalkEntry[] = []
 		const seen_sheets = new Set<CSSStyleSheet>()
+
 		function visit(root: Document | ShadowRoot) {
 			for (const sheet of root.adoptedStyleSheets) {
 				if (seen_sheets.has(sheet)) {
@@ -71,6 +68,8 @@ async function walk_css_entries(
 		visit(document)
 		return found
 	})
+
+	// Cannot call on_entry within page.evaluate(), so call it here afterwards
 	for (const entry of entries) {
 		on_entry(entry)
 	}
