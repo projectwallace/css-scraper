@@ -95,7 +95,12 @@ export async function scrape_css(
 				css,
 			} satisfies CSSLinkSource)
 		} else {
-			sources.push({ type: 'import', href: response_url, url: response_url, css } satisfies CSSImportSource)
+			sources.push({
+				type: 'import',
+				href: response_url,
+				url: response_url,
+				css,
+			} satisfies CSSImportSource)
 		}
 	}
 
