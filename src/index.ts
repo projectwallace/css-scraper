@@ -2,6 +2,8 @@ import type { PageLike, ResponseLike } from './types.ts'
 
 type ScraperOptions = {
 	exclude_unused_css?: boolean
+	/** Also resolve and return original sources via CSS source maps, where available. Not yet implemented. */
+	resolve_source_maps?: boolean
 }
 
 export async function scrape_css(page: PageLike, url: string, options: ScraperOptions = {}) {

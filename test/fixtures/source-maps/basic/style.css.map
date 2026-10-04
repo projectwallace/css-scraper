@@ -1,0 +1,7 @@
+{
+	"version": 3,
+	"sources": ["style.source.css"],
+	"sourcesContent": [".original-source {\n\tcolor: #dd1111;\n}\n"],
+	"names": [],
+	"mappings": "AAAA"
+}

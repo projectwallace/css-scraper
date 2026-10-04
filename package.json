@@ -31,8 +31,11 @@
 	},
 	"scripts": {
 		"build": "tsdown",
-		"test": "vitest --coverage",
-		"check": "tsc",
+		"test": "vitest --coverage --project=unit --project=integration",
+		"test:unit": "vitest --project=unit",
+		"test:integration": "vitest --project=integration",
+		"test:matrix": "vitest --project=matrix",
+		"check": "tsc && tsc --project test",
 		"lint": "oxlint && oxfmt --check",
 		"knip": "knip"
 	},

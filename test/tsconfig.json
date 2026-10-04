@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "es2024",
+		"verbatimModuleSyntax": true,
+		"allowJs": false,
+		"moduleDetection": "force",
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"types": ["node"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"lib": ["es2024", "DOM"],
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
+		"skipLibCheck": true
+	},
+	"include": ["**/*.ts", "../src/**/*.ts"]
+}

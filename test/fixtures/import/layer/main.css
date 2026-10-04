@@ -1,0 +1,5 @@
+@import url("imported-layer.css") layer(third-party);
+
+.main {
+	color: #997777;
+}

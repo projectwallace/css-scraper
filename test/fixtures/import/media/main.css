@@ -1,0 +1,5 @@
+@import url("imported-dark.css") (prefers-color-scheme: dark);
+
+.main {
+	color: #993333;
+}
