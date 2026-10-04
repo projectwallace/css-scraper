@@ -42,9 +42,11 @@ export type FakePageInit = {
 
 export function fake_page(init: FakePageInit = {}): PageLike {
 	const response_listeners = new Set<(response: ResponseLike) => void>()
+	let current_url = 'about:blank'
 
 	return {
 		async goto(url) {
+			current_url = url
 			if (init.goto) {
 				const result = await init.goto(url)
 				for (const response of init.responses ?? []) {
@@ -57,8 +59,8 @@ export function fake_page(init: FakePageInit = {}): PageLike {
 			}
 			return undefined
 		},
-		evaluate() {
-			return Promise.resolve([] as never)
+		frames() {
+			return [{ url: () => current_url, evaluate: () => Promise.resolve([] as never) }]
 		},
 		coverage: {
 			startCSSCoverage() {

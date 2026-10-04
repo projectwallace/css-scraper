@@ -5,7 +5,7 @@ import type {
 	CSSLinkSource,
 	CSSSource,
 } from './css-source.types.ts'
-import type { PageLike, ResponseLike } from './types.ts'
+import type { FrameLike, PageLike, ResponseLike } from './types.ts'
 
 export type { CSSSource } from './css-source.types.ts'
 
@@ -32,14 +32,14 @@ type CSSWalkEntry =
 	| { type: 'inline'; css: string }
 	| { type: 'adopted'; css: string }
 
-/** Walks the document and every nested open shadow root exactly once, in document order,
- * invoking `on_entry` for each `<link rel="stylesheet">` href, each non-empty `style`
- * attribute, and each distinct adopted `CSSStyleSheet`'s CSS text encountered. */
+/** Walks a frame's document and every nested open shadow root exactly once, in document
+ * order, invoking `on_entry` for each `<link rel="stylesheet">` href, each non-empty
+ * `style` attribute, and each distinct adopted `CSSStyleSheet`'s CSS text encountered. */
 async function walk_css_entries(
-	page: PageLike,
+	frame: FrameLike,
 	on_entry: (entry: CSSWalkEntry) => void,
 ): Promise<void> {
-	const entries = await page.evaluate(() => {
+	const entries = await frame.evaluate(() => {
 		const found: CSSWalkEntry[] = []
 		const seen_sheets = new Set<CSSStyleSheet>()
 
@@ -117,16 +117,30 @@ export async function scrape_css(
 
 	const link_hrefs = new Set<string>()
 	const inline_sources: CSSInlineSource[] = []
-	const adopted_css: Set<string> = new Set()
-	await walk_css_entries(page, (entry) => {
-		if (entry.type === 'link') {
-			link_hrefs.add(entry.href)
-		} else if (entry.type === 'inline') {
-			inline_sources.push({ type: 'inline', url, css: entry.css } satisfies CSSInlineSource)
-		} else {
-			adopted_css.add(entry.css)
-		}
-	})
+	const adopted_sources: CSSAdoptedStylesheetSource[] = []
+
+	for (const frame of page.frames()) {
+		const frame_url = frame.url()
+		const seen_adopted_css = new Set<string>()
+		await walk_css_entries(frame, (entry) => {
+			if (entry.type === 'link') {
+				link_hrefs.add(entry.href)
+			} else if (entry.type === 'inline') {
+				inline_sources.push({
+					type: 'inline',
+					url: frame_url,
+					css: entry.css,
+				} satisfies CSSInlineSource)
+			} else if (!seen_adopted_css.has(entry.css)) {
+				seen_adopted_css.add(entry.css)
+				adopted_sources.push({
+					type: 'adopted-stylesheet',
+					url: frame_url,
+					css: entry.css,
+				} satisfies CSSAdoptedStylesheetSource)
+			}
+		})
+	}
 
 	const deduplicator = create_deduplicator()
 	const sources: CSSSource[] = []
@@ -162,15 +176,7 @@ export async function scrape_css(
 		}
 	}
 
-	for (const css of adopted_css) {
-		sources.push({
-			type: 'adopted-stylesheet',
-			url,
-			css,
-		} satisfies CSSAdoptedStylesheetSource)
-	}
-
-	sources.push(...inline_sources)
+	sources.push(...adopted_sources, ...inline_sources)
 
 	return sources
 }

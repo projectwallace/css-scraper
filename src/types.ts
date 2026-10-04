@@ -4,6 +4,7 @@ export interface RequestLike {
 	resourceType(): string
 	headers(): Record<string, string>
 }
+
 export interface ResponseLike {
 	ok(): boolean
 	url(): string
@@ -13,10 +14,11 @@ export interface ResponseLike {
 	request(): RequestLike
 	text(): Promise<string>
 }
-export interface CSSCoverageEntry {
-	url: string
-	text?: string
-	ranges: { start: number; end: number }[]
+
+/** A single browsing context: the top-level document, or a nested <iframe>/<frame>. */
+export interface FrameLike {
+	url(): string
+	evaluate<R>(fn: () => R | Promise<R>): Promise<R>
 }
 
 export interface PageLike {
@@ -27,18 +29,11 @@ export interface PageLike {
 			timeout?: number
 		},
 	): Promise<unknown>
-	evaluate<R>(fn: () => R | Promise<R>): Promise<R>
-	coverage: {
-		startCSSCoverage(options?: { resetOnNavigation?: boolean }): Promise<void>
-		stopCSSCoverage(): Promise<CSSCoverageEntry[]>
-	}
+	/** Every frame attached to the page, including the main frame itself, each with its own document. */
+	frames(): FrameLike[]
 	on(event: 'request', listener: (request: RequestLike) => void): unknown
 	on(event: 'response', listener: (response: ResponseLike) => void): unknown
 	off(event: 'request', listener: (request: RequestLike) => void): unknown
 	off(event: 'response', listener: (response: ResponseLike) => void): unknown
 	close(): Promise<void>
-}
-
-export interface BrowserLike {
-	newPage(): Promise<PageLike>
 }

@@ -1,0 +1,16 @@
+[
+	{
+		"type": "link",
+		"href": "/iframe/nested/child.css",
+		"url": "/iframe/nested/child.css",
+		"rel": "stylesheet",
+		"css": ".iframe-nested-child {\n\tcolor: #334455;\n}\n"
+	},
+	{
+		"type": "link",
+		"href": "/iframe/nested/grandchild.css",
+		"url": "/iframe/nested/grandchild.css",
+		"rel": "stylesheet",
+		"css": ".iframe-nested-grandchild {\n\tcolor: #556677;\n}\n"
+	}
+]

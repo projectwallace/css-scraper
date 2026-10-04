@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/iframe/basic-link/child.css",
+		"url": "/iframe/basic-link/child.css",
+		"rel": "stylesheet",
+		"css": ".iframe-basic-link {\n\tcolor: #115599;\n}\n"
+	}
+]

@@ -1,0 +1,7 @@
+[
+	{
+		"type": "adopted-stylesheet",
+		"url": "/iframe/adopted-stylesheet/child.html",
+		"css": ".iframe-adopted { color: rgb(34, 119, 68); }"
+	}
+]

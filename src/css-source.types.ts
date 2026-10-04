@@ -31,11 +31,6 @@ export type CSSInlineSource = CSSSourceBase & {
 	type: 'inline'
 }
 
-/** A rule added to an existing CSSStyleSheet via the CSSOM, e.g. `sheet.insertRule()`. */
-export type CSSCssomSource = CSSSourceBase & {
-	type: 'cssom'
-}
-
 /** A constructed CSSStyleSheet adopted via `document.adoptedStyleSheets` or
  * `shadowRoot.adoptedStyleSheets`. */
 export type CSSAdoptedStylesheetSource = CSSSourceBase & {
@@ -47,5 +42,4 @@ export type CSSSource =
 	| CSSImportSource
 	| CSSStyleSource
 	| CSSInlineSource
-	| CSSCssomSource
 	| CSSAdoptedStylesheetSource
