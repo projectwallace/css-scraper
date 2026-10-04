@@ -1,0 +1,7 @@
+[
+	{
+		"type": "inline",
+		"url": "/inline-style/mixed-casing/index.html",
+		"css": "--my-counter: 1"
+	}
+]

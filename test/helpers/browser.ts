@@ -8,6 +8,7 @@ export type TestPage = PageLike & {
 		reducedMotion?: 'reduce' | 'no-preference'
 		forcedColors?: 'active' | 'none'
 	}): Promise<void>
+	close(): Promise<void>
 }
 
 let browser: Browser | undefined

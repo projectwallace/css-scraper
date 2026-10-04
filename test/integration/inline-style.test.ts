@@ -30,6 +30,11 @@ describe('inline style="" attributes', () => {
 		expect(result).toEqual(load_expected_sources(server, 'inline-style/basic'))
 	})
 
+	test('a STYLE="" attribute is also captured as an "inline" source', async () => {
+		const result = await scrape_css(page, `${server.url}/inline-style/mixed-casing/index.html`)
+		expect(result).toEqual(load_expected_sources(server, 'inline-style/mixed-casing'))
+	})
+
 	test('multiple elements each contribute their own declaration', async () => {
 		const result = await scrape_css(page, `${server.url}/inline-style/multiple-elements/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'inline-style/multiple-elements'))
