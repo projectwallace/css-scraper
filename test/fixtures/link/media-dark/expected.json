@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/link/media-dark/light.css",
+		"url": "/link/media-dark/light.css",
+		"rel": "stylesheet",
+		"css": ".scheme-light {\n\tcolor: #eeeeee;\n}\n"
+	}
+]

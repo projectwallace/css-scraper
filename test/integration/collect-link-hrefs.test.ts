@@ -3,27 +3,27 @@ import { collect_link_hrefs } from '../../src/index.ts'
 import { closeBrowser, newPage, type TestPage } from '../helpers/browser.ts'
 import { createFixtureServer, type FixtureServer } from '../helpers/server.ts'
 
+let server: FixtureServer
+let page: TestPage
+
+beforeAll(async () => {
+	server = await createFixtureServer()
+})
+
+afterAll(async () => {
+	await server.close()
+	await closeBrowser()
+})
+
+beforeEach(async () => {
+	page = await newPage()
+})
+
+afterEach(async () => {
+	await page.close()
+})
+
 describe('collect_link_hrefs', () => {
-	let server: FixtureServer
-	let page: TestPage
-
-	beforeAll(async () => {
-		server = await createFixtureServer()
-	})
-
-	afterAll(async () => {
-		await server.close()
-		await closeBrowser()
-	})
-
-	beforeEach(async () => {
-		page = await newPage()
-	})
-
-	afterEach(async () => {
-		await page.close()
-	})
-
 	test('resolves to the absolute hrefs of the stylesheet links on the page', async () => {
 		await page.goto(`${server.url}/link/basic/index.html`)
 		const result = await collect_link_hrefs(page)

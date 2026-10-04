@@ -1,0 +1,7 @@
+[
+	{
+		"type": "cssom",
+		"url": "/cssom/insert-rule/index.html",
+		"css": ".cssom-insert-rule { color: rgb(136, 17, 17); }"
+	}
+]

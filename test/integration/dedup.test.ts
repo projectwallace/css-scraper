@@ -1,29 +1,30 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { scrape_css } from '../../src/index.ts'
 import { closeBrowser, newPage, type TestPage } from '../helpers/browser.ts'
+import { load_expected_sources } from '../helpers/expected-sources.ts'
 import { createFixtureServer, type FixtureServer } from '../helpers/server.ts'
 
+let server: FixtureServer
+let page: TestPage
+
+beforeAll(async () => {
+	server = await createFixtureServer()
+})
+
+afterAll(async () => {
+	await server.close()
+	await closeBrowser()
+})
+
+beforeEach(async () => {
+	page = await newPage()
+})
+
+afterEach(async () => {
+	await page.close()
+})
+
 describe('deduplication', () => {
-	let server: FixtureServer
-	let page: TestPage
-
-	beforeAll(async () => {
-		server = await createFixtureServer()
-	})
-
-	afterAll(async () => {
-		await server.close()
-		await closeBrowser()
-	})
-
-	beforeEach(async () => {
-		page = await newPage()
-	})
-
-	afterEach(async () => {
-		await page.close()
-	})
-
 	// The browser itself coalesces two <link>s with the exact same href into a
 	// single network request, so this mostly documents that behavior rather
 	// than exercising our own dedup logic. The case that actually exercises
@@ -33,8 +34,7 @@ describe('deduplication', () => {
 	// the response-handling level in test/unit/dedup.test.ts instead.
 	test('two <link>s to the identical URL produce a single entry', async () => {
 		const result = await scrape_css(page, `${server.url}/dedup/same-url-identical/index.html`)
-		const matches = result.filter((source) => source.css.includes('.same-url-identical'))
-		expect(matches).toHaveLength(1)
+		expect(result).toEqual(load_expected_sources(server, 'dedup/same-url-identical'))
 	})
 
 	// Three differently-spelled hrefs that all resolve to the exact same
@@ -64,7 +64,6 @@ describe('deduplication', () => {
 			page,
 			`${server.url}/dedup/same-url-relative-absolute/index.html`,
 		)
-		const matches = result.filter((source) => source.css.includes('.same-url-relative-absolute'))
-		expect(matches).toHaveLength(1)
+		expect(result).toEqual(load_expected_sources(server, 'dedup/same-url-relative-absolute'))
 	})
 })

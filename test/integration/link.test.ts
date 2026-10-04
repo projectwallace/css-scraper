@@ -1,76 +1,71 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { scrape_css } from '../../src/index.ts'
 import { closeBrowser, newPage, type TestPage } from '../helpers/browser.ts'
-import { css_of } from '../helpers/css-source.ts'
+import { load_expected_sources } from '../helpers/expected-sources.ts'
 import { createFixtureServer, type FixtureServer } from '../helpers/server.ts'
 
+let server: FixtureServer
+let page: TestPage
+
+beforeAll(async () => {
+	server = await createFixtureServer()
+})
+
+afterAll(async () => {
+	await server.close()
+	await closeBrowser()
+})
+
+beforeEach(async () => {
+	page = await newPage()
+})
+
+afterEach(async () => {
+	await page.close()
+})
+
 describe('link stylesheets', () => {
-	let server: FixtureServer
-	let page: TestPage
-
-	beforeAll(async () => {
-		server = await createFixtureServer()
-	})
-
-	afterAll(async () => {
-		await server.close()
-		await closeBrowser()
-	})
-
-	beforeEach(async () => {
-		page = await newPage()
-	})
-
-	afterEach(async () => {
-		await page.close()
-	})
-
 	test('basic <link rel="stylesheet"> is captured, tagged as a link source', async () => {
 		const result = await scrape_css(page, `${server.url}/link/basic/index.html`)
-		expect(css_of(result)).toEqual(['.basic-link {\n\tcolor: #abc123;\n}\n'])
-		expect(result[0]).toMatchObject({ type: 'link', rel: 'stylesheet' })
+		expect(result).toEqual(load_expected_sources(server, 'link/basic'))
 	})
 
 	test('rel="STYLESHEET" (any case) is still classified as a link source', async () => {
 		const result = await scrape_css(page, `${server.url}/link/mixed-case-rel/index.html`)
-		expect(css_of(result)).toEqual(['.mixed-case-rel {\n\tcolor: #ee8888;\n}\n'])
-		expect(result[0]).toMatchObject({ type: 'link' })
+		expect(result).toEqual(load_expected_sources(server, 'link/mixed-case-rel'))
 	})
 
 	test('rel="stylesheet alternate" is captured', async () => {
 		const result = await scrape_css(page, `${server.url}/link/alternate/index.html`)
-		expect(css_of(result)).toEqual(['.alternate-link {\n\tcolor: #abc234;\n}\n'])
+		expect(result).toEqual(load_expected_sources(server, 'link/alternate'))
 	})
 
 	test('media="(prefers-color-scheme: dark)" only includes the matching scheme', async () => {
 		await page.emulateMedia({ colorScheme: 'light' })
 		const result = await scrape_css(page, `${server.url}/link/media-dark/index.html`)
-		expect(css_of(result).join('\n')).toContain('.scheme-light')
-		expect(css_of(result).join('\n')).not.toContain('.scheme-dark')
+		expect(result).toEqual(load_expected_sources(server, 'link/media-dark'))
 	})
 
 	test('media="(prefers-reduced-motion: reduce)" only includes the matching preference', async () => {
 		await page.emulateMedia({ reducedMotion: 'reduce' })
 		const result = await scrape_css(page, `${server.url}/link/media-reduced-motion/index.html`)
-		expect(css_of(result).join('\n')).toContain('.motion-reduced')
-		expect(css_of(result).join('\n')).not.toContain('.motion-ok')
+		expect(result).toEqual(load_expected_sources(server, 'link/media-reduced-motion'))
 	})
 
 	test('media="(forced-colors: active)" only includes the matching mode', async () => {
 		await page.emulateMedia({ forcedColors: 'active' })
 		const result = await scrape_css(page, `${server.url}/link/media-forced-colors/index.html`)
-		expect(css_of(result).join('\n')).toContain('.colors-forced')
-		expect(css_of(result).join('\n')).not.toContain('.colors-normal')
+		expect(result).toEqual(load_expected_sources(server, 'link/media-forced-colors'))
 	})
 
 	test('a disabled link is not fetched at all', async () => {
 		const result = await scrape_css(page, `${server.url}/link/disabled/index.html`)
-		expect(result).toEqual([])
+		expect(result).toEqual(load_expected_sources(server, 'link/disabled'))
 	})
 
 	test('a 404 href produces no entry, not a thrown error', async () => {
 		const result = await scrape_css(page, `${server.url}/link/failure-404/index.html`)
-		expect(result).toEqual([])
+		expect(result).toEqual(load_expected_sources(server, 'link/failure-404'))
 	})
 
 	test('a stylesheet served with the wrong content-type is excluded', async () => {
@@ -83,6 +78,6 @@ describe('link stylesheets', () => {
 			page,
 			`${server.url}/link/failure-wrong-content-type/index.html`,
 		)
-		expect(result).toEqual([])
+		expect(result).toEqual(load_expected_sources(server, 'link/failure-wrong-content-type'))
 	})
 })

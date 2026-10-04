@@ -1,0 +1,12 @@
+[
+	{
+		"type": "style",
+		"url": "/style-element/multiple/index.html",
+		"css": "\n\t\t\t.style-element-first {\n\t\t\t\tcolor: #551111;\n\t\t\t}\n\t\t"
+	},
+	{
+		"type": "style",
+		"url": "/style-element/multiple/index.html",
+		"css": "\n\t\t\t.style-element-second {\n\t\t\t\tcolor: #552222;\n\t\t\t}\n\t\t"
+	}
+]

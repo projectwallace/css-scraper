@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/link/alternate/style.css",
+		"url": "/link/alternate/style.css",
+		"rel": "stylesheet",
+		"css": ".alternate-link {\n\tcolor: #abc234;\n}\n"
+	}
+]

@@ -1,0 +1,15 @@
+[
+	{
+		"type": "link",
+		"href": "/import/supports/main.css",
+		"url": "/import/supports/main.css",
+		"rel": "stylesheet",
+		"css": "@import url('imported-grid.css') supports(display: grid);\n\n.main {\n\tcolor: #995555;\n}\n"
+	},
+	{
+		"type": "import",
+		"href": "/import/supports/imported-grid.css",
+		"url": "/import/supports/imported-grid.css",
+		"css": ".imported-grid {\n\tcolor: #996666;\n}\n"
+	}
+]

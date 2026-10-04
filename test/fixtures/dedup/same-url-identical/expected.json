@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/dedup/same-url-identical/style.css",
+		"url": "/dedup/same-url-identical/style.css",
+		"rel": "stylesheet",
+		"css": ".same-url-identical {\n\tcolor: #cc1111;\n}\n"
+	}
+]

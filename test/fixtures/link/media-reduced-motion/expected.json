@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/link/media-reduced-motion/reduced.css",
+		"url": "/link/media-reduced-motion/reduced.css",
+		"rel": "stylesheet",
+		"css": ".motion-reduced {\n\tcolor: #bb4444;\n}\n"
+	}
+]

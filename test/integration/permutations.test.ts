@@ -15,29 +15,29 @@ function ingredient_by_id(id: string) {
 	return ingredient
 }
 
+let server: FixtureServer
+let page: TestPage
+
+beforeAll(async () => {
+	server = await createFixtureServer()
+})
+
+afterAll(async () => {
+	await server.close()
+	await closeBrowser()
+}, 30000)
+
+beforeEach(async () => {
+	page = await newPage()
+	// import-media-match assumes a light color scheme
+	await page.emulateMedia({ colorScheme: 'light' })
+})
+
+afterEach(async () => {
+	await page.close()
+})
+
 describe('CSS source permutations', () => {
-	let server: FixtureServer
-	let page: TestPage
-
-	beforeAll(async () => {
-		server = await createFixtureServer()
-	})
-
-	afterAll(async () => {
-		await server.close()
-		await closeBrowser()
-	}, 30000)
-
-	beforeEach(async () => {
-		page = await newPage()
-		// import-media-match assumes a light color scheme
-		await page.emulateMedia({ colorScheme: 'light' })
-	})
-
-	afterEach(async () => {
-		await page.close()
-	})
-
 	test.each(combos.map((combo) => [combo] as const))('combo: %s', async (ids) => {
 		const path = composePage(server, ids)
 		const result = await scrape_css(page, `${server.url}${path}`)

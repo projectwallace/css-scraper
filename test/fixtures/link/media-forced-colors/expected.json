@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/link/media-forced-colors/forced.css",
+		"url": "/link/media-forced-colors/forced.css",
+		"rel": "stylesheet",
+		"css": ".colors-forced {\n\tcolor: #cc6666;\n}\n"
+	}
+]

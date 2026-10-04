@@ -1,0 +1,7 @@
+[
+	{
+		"type": "style",
+		"url": "/style-element/basic/index.html",
+		"css": "\n\t\t\t.style-element-basic {\n\t\t\t\tcolor: #444444;\n\t\t\t}\n\t\t"
+	}
+]

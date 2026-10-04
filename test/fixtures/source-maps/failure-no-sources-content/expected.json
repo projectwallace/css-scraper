@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/source-maps/failure-no-sources-content/style.css",
+		"url": "/source-maps/failure-no-sources-content/style.css",
+		"rel": "stylesheet",
+		"css": ".shipped {\n\tcolor: #dd3333;\n}\n/*# sourceMappingURL=style.css.map */\n"
+	}
+]

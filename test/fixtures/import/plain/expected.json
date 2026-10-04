@@ -1,0 +1,15 @@
+[
+	{
+		"type": "link",
+		"href": "/import/plain/main.css",
+		"url": "/import/plain/main.css",
+		"rel": "stylesheet",
+		"css": "@import url('imported.css');\n\n.main {\n\tcolor: #991111;\n}\n"
+	},
+	{
+		"type": "import",
+		"href": "/import/plain/imported.css",
+		"url": "/import/plain/imported.css",
+		"css": ".imported {\n\tcolor: #992222;\n}\n"
+	}
+]

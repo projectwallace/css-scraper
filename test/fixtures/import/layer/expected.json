@@ -1,0 +1,15 @@
+[
+	{
+		"type": "link",
+		"href": "/import/layer/main.css",
+		"url": "/import/layer/main.css",
+		"rel": "stylesheet",
+		"css": "@import url('imported-layer.css') layer(third-party);\n\n.main {\n\tcolor: #997777;\n}\n"
+	},
+	{
+		"type": "import",
+		"href": "/import/layer/imported-layer.css",
+		"url": "/import/layer/imported-layer.css",
+		"css": ".imported-layer {\n\tcolor: #998888;\n}\n"
+	}
+]

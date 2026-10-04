@@ -1,0 +1,8 @@
+[
+	{
+		"type": "import",
+		"href": "/web-components/shadow-import/imported.css",
+		"url": "/web-components/shadow-import/imported.css",
+		"css": ".shadow-import-element {\n\tcolor: #bb3333;\n}\n"
+	}
+]
