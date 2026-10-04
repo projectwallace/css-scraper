@@ -1,6 +1,13 @@
 [
 	{
 		"type": "link",
+		"href": "/link/media-reduced-motion/motion.css",
+		"url": "/link/media-reduced-motion/motion.css",
+		"rel": "stylesheet",
+		"css": ".motion-ok {\n\tcolor: #bb3333;\n}\n"
+	},
+	{
+		"type": "link",
 		"href": "/link/media-reduced-motion/reduced.css",
 		"url": "/link/media-reduced-motion/reduced.css",
 		"rel": "stylesheet",

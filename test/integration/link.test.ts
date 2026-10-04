@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
+import type { CSSSource } from '../../src/index.ts'
 import { scrape_css } from '../../src/index.ts'
 import { closeBrowser, newPage, type TestPage } from '../helpers/browser.ts'
 import { load_expected_sources } from '../helpers/expected-sources.ts'
@@ -6,6 +7,9 @@ import { createFixtureServer, type FixtureServer } from '../helpers/server.ts'
 
 let server: FixtureServer
 let page: TestPage
+
+// Media-conditioned sheets come back in network arrival order, which is not guaranteed.
+const by_css = (a: CSSSource, b: CSSSource) => a.css.localeCompare(b.css)
 
 beforeAll(async () => {
 	server = await createFixtureServer()
@@ -40,22 +44,28 @@ describe('link stylesheets', () => {
 		expect(result).toEqual(load_expected_sources(server, 'link/alternate'))
 	})
 
-	test('media="(prefers-color-scheme: dark)" only includes the matching scheme', async () => {
+	test('media="(prefers-color-scheme: dark)" is captured regardless of the active scheme', async () => {
 		await page.emulateMedia({ colorScheme: 'light' })
 		const result = await scrape_css(page, `${server.url}/link/media-dark/index.html`)
-		expect(result).toEqual(load_expected_sources(server, 'link/media-dark'))
+		expect(result.sort(by_css)).toEqual(
+			load_expected_sources(server, 'link/media-dark').sort(by_css),
+		)
 	})
 
-	test('media="(prefers-reduced-motion: reduce)" only includes the matching preference', async () => {
+	test('media="(prefers-reduced-motion: reduce)" is captured regardless of the active preference', async () => {
 		await page.emulateMedia({ reducedMotion: 'reduce' })
 		const result = await scrape_css(page, `${server.url}/link/media-reduced-motion/index.html`)
-		expect(result).toEqual(load_expected_sources(server, 'link/media-reduced-motion'))
+		expect(result.sort(by_css)).toEqual(
+			load_expected_sources(server, 'link/media-reduced-motion').sort(by_css),
+		)
 	})
 
-	test('media="(forced-colors: active)" only includes the matching mode', async () => {
+	test('media="(forced-colors: active)" is captured regardless of the active mode', async () => {
 		await page.emulateMedia({ forcedColors: 'active' })
 		const result = await scrape_css(page, `${server.url}/link/media-forced-colors/index.html`)
-		expect(result).toEqual(load_expected_sources(server, 'link/media-forced-colors'))
+		expect(result.sort(by_css)).toEqual(
+			load_expected_sources(server, 'link/media-forced-colors').sort(by_css),
+		)
 	})
 
 	test('a disabled link is captured, tagged with its disabled attribute', async () => {

@@ -1,6 +1,13 @@
 [
 	{
 		"type": "link",
+		"href": "/link/media-forced-colors/normal.css",
+		"url": "/link/media-forced-colors/normal.css",
+		"rel": "stylesheet",
+		"css": ".colors-normal {\n\tcolor: #cc5555;\n}\n"
+	},
+	{
+		"type": "link",
 		"href": "/link/media-forced-colors/forced.css",
 		"url": "/link/media-forced-colors/forced.css",
 		"rel": "stylesheet",
