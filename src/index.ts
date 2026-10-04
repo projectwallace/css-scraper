@@ -1,6 +1,7 @@
 import type {
 	CSSAdoptedStylesheetSource,
 	CSSImportSource,
+	CSSInlineSource,
 	CSSLinkSource,
 	CSSSource,
 } from './css-source.types.ts'
@@ -45,6 +46,28 @@ export async function collect_link_hrefs(page: PageLike): Promise<Set<string>> {
 	return new Set(hrefs)
 }
 
+async function collect_inline_styles(page: PageLike): Promise<Array<string>> {
+	const inline_styles = await page.evaluate(() => {
+		const found: string[] = []
+		function visit(root: Document | ShadowRoot) {
+			for (const element of root.querySelectorAll('[style]')) {
+				const attr_contents = element.getAttribute('style')?.trim()
+				if (attr_contents) {
+					found.push(attr_contents)
+				}
+			}
+			for (const el of root.querySelectorAll('*')) {
+				if (el.shadowRoot) {
+					visit(el.shadowRoot)
+				}
+			}
+		}
+		visit(document)
+		return found
+	})
+	return inline_styles
+}
+
 /** Resolves the CSS text of every `document.adoptedStyleSheets` /
  * `shadowRoot.adoptedStyleSheets` entry currently in the document, including those adopted
  * inside open shadow roots. Each distinct `CSSStyleSheet` object is only read once, and
@@ -60,7 +83,8 @@ export async function collect_adopted_stylesheets(page: PageLike): Promise<strin
 					continue
 				}
 				seen_sheets.add(sheet)
-				found.push(Array.from(sheet.cssRules, (rule) => rule.cssText).join('\n'))
+				const sheet_css = Array.from(sheet.cssRules, (rule) => rule.cssText).join('\n')
+				found.push(sheet_css)
 			}
 			for (const el of root.querySelectorAll('*')) {
 				if (el.shadowRoot) {
@@ -156,6 +180,15 @@ export async function scrape_css(
 			url,
 			css,
 		} satisfies CSSAdoptedStylesheetSource)
+	}
+
+	const inline_css = await collect_inline_styles(page)
+	for (const inline_style of inline_css) {
+		sources.push({
+			type: 'inline',
+			url,
+			css: inline_style,
+		} satisfies CSSInlineSource)
 	}
 
 	return sources
