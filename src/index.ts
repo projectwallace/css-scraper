@@ -1,4 +1,4 @@
-import type { CSSLinkSource, CSSSource } from './css-source.types.ts'
+import type { CSSImportSource, CSSLinkSource, CSSSource } from './css-source.types.ts'
 import type { PageLike, ResponseLike } from './types.ts'
 
 export type { CSSSource } from './css-source.types.ts'
@@ -27,14 +27,6 @@ export async function collect_link_hrefs(page: PageLike): Promise<Set<string>> {
 		),
 	)
 	return new Set(hrefs)
-}
-
-/** Tags a fetched stylesheet as `link` or `import`, depending on whether it matches a resolved `<link>` href. */
-export function build_source(url: string, css: string, link_hrefs: Set<string>): CSSSource {
-	if (link_hrefs.has(url)) {
-		return { type: 'link', href: url, url, rel: 'stylesheet', css }
-	}
-	return { type: 'import', href: url, url, css }
 }
 
 /** Tracks which (url, css) pairs have already been seen, to collapse identical repeat responses. */
@@ -94,7 +86,17 @@ export async function scrape_css(
 			continue
 		}
 
-		sources.push(build_source(response_url, css, link_hrefs))
+		if (link_hrefs.has(response_url)) {
+			sources.push({
+				type: 'link',
+				href: response_url,
+				url: response_url,
+				rel: 'stylesheet',
+				css,
+			} satisfies CSSLinkSource)
+		} else {
+			sources.push({ type: 'import', href: response_url, url: response_url, css } satisfies CSSImportSource)
+		}
 	}
 
 	return sources
