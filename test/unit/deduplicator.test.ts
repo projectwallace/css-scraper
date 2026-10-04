@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { create_deduplicator } from '../../src/index.ts'
+import { create_deduplicator } from '../../src/network-css.ts'
 
 describe('create_deduplicator', () => {
 	test('reports the first (url, css) pair as not a duplicate', () => {

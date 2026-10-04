@@ -1,9 +1,12 @@
+// Adopts synchronously, like the other fixtures: an awaited fetch could finish after the
+// page's `load` event, which is when scrape_css reads the DOM.
+const duplicate_css = '.shadow-adopted-duplicate { color: #bb5555; }'
+
 class MyDuplicateAdoptingElement extends HTMLElement {
-	async connectedCallback() {
+	connectedCallback() {
 		const root = this.attachShadow({ mode: 'open' })
-		const css = await fetch('style.css').then((response) => response.text())
 		const sheet = new CSSStyleSheet()
-		sheet.replaceSync(css)
+		sheet.replaceSync(duplicate_css)
 		root.adoptedStyleSheets = [sheet]
 		root.innerHTML += '<p>duplicate-adopted content</p>'
 	}

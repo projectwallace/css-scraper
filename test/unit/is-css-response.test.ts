@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { is_css_response } from '../../src/index.ts'
+import { is_css_response } from '../../src/network-css.ts'
 import { fake_response } from '../helpers/fakes.ts'
 
 describe('is_css_response', () => {
