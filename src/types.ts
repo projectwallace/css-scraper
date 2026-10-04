@@ -33,7 +33,4 @@ export interface PageLike {
 	frames(): FrameLike[]
 	on(event: 'request', listener: (request: RequestLike) => void): unknown
 	on(event: 'response', listener: (response: ResponseLike) => void): unknown
-	off(event: 'request', listener: (request: RequestLike) => void): unknown
-	off(event: 'response', listener: (response: ResponseLike) => void): unknown
-	close(): Promise<void>
 }

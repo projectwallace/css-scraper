@@ -47,17 +47,11 @@ export function fake_page(init: FakePageInit = {}): PageLike {
 	return {
 		async goto(url) {
 			current_url = url
-			if (init.goto) {
-				const result = await init.goto(url)
-				for (const response of init.responses ?? []) {
-					for (const listener of response_listeners) listener(response)
-				}
-				return result
-			}
+			const result = await init.goto?.(url)
 			for (const response of init.responses ?? []) {
 				for (const listener of response_listeners) listener(response)
 			}
-			return undefined
+			return result
 		},
 		frames() {
 			return [{ url: () => current_url, evaluate: () => Promise.resolve([] as never) }]
@@ -65,14 +59,6 @@ export function fake_page(init: FakePageInit = {}): PageLike {
 		on(event, listener) {
 			if (event === 'response') response_listeners.add(listener as (response: ResponseLike) => void)
 			return this
-		},
-		off(event, listener) {
-			if (event === 'response')
-				response_listeners.delete(listener as (response: ResponseLike) => void)
-			return this
-		},
-		close() {
-			return Promise.resolve()
 		},
 	}
 }

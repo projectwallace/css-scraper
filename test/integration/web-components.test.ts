@@ -33,6 +33,14 @@ describe('web component adoptedStyleSheets', () => {
 		expect(result).toEqual(load_expected_sources(server, 'web-components/adopted-stylesheets'))
 	})
 
+	test('identical adopted stylesheets within one frame are reported once', async () => {
+		const result = await scrape_css(
+			page,
+			`${server.url}/web-components/adopted-same-css-twice/index.html`,
+		)
+		expect(result).toEqual(load_expected_sources(server, 'web-components/adopted-same-css-twice'))
+	})
+
 	test('a shadow root with no adopted stylesheets contributes nothing', async () => {
 		const result = await scrape_css(
 			page,

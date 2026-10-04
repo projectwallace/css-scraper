@@ -37,6 +37,7 @@ async function walk_css_entries(
 	on_entry: (entry: CSSWalkEntry) => void,
 ): Promise<void> {
 	const entries = await frame.evaluate(() => {
+		/* v8 ignore start -- runs inside the browser via Playwright, not in the Node coverage process */
 		const found: CSSWalkEntry[] = []
 		const seen_sheets = new Set<CSSStyleSheet>()
 
@@ -97,6 +98,7 @@ async function walk_css_entries(
 		}
 		visit(document)
 		return found
+		/* v8 ignore stop */
 	})
 
 	// Cannot call on_entry within page.evaluate(), so call it here afterwards
