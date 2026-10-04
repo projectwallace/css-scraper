@@ -26,7 +26,7 @@ export const INGREDIENTS: Ingredient[] = [
 		id: 'style-element-static',
 		head: '<style>.style-element-static{color:#222222}</style>',
 		expectedCss: '.style-element-static{color:#222222}',
-		implemented: false,
+		implemented: true,
 	},
 	{
 		id: 'style-element-js-created',
@@ -36,7 +36,7 @@ export const INGREDIENTS: Ingredient[] = [
 			document.head.appendChild(el)
 		</script>`,
 		expectedCss: '.style-element-js-created{color:#333333}',
-		implemented: false,
+		implemented: true,
 	},
 	{
 		id: 'inline-style-attr',

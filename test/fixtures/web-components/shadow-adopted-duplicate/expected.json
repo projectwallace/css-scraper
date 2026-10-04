@@ -5,5 +5,10 @@
 		"url": "/web-components/shadow-adopted-duplicate/style.css",
 		"rel": "stylesheet",
 		"css": ".shadow-adopted-duplicate {\n\tcolor: #bb5555;\n}\n"
+	},
+	{
+		"type": "adopted-stylesheet",
+		"url": "/web-components/shadow-adopted-duplicate/index.html",
+		"css": ".shadow-adopted-duplicate { color: rgb(187, 85, 85); }"
 	}
 ]

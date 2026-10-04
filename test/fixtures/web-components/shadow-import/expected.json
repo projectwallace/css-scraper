@@ -4,5 +4,10 @@
 		"href": "/web-components/shadow-import/imported.css",
 		"url": "/web-components/shadow-import/imported.css",
 		"css": ".shadow-import-element {\n\tcolor: #bb3333;\n}\n"
+	},
+	{
+		"type": "style",
+		"url": "/web-components/shadow-import/index.html",
+		"css": "@import url('imported.css');"
 	}
 ]

@@ -4,6 +4,7 @@ import type {
 	CSSInlineSource,
 	CSSLinkSource,
 	CSSSource,
+	CSSStyleSource,
 } from './css-source.types.ts'
 import type { FrameLike, PageLike, ResponseLike } from './types.ts'
 
@@ -31,10 +32,12 @@ type CSSWalkEntry =
 	| { type: 'link'; href: string }
 	| { type: 'inline'; css: string }
 	| { type: 'adopted'; css: string }
+	| { type: 'style'; css: string }
 
 /** Walks a frame's document and every nested open shadow root exactly once, in document
  * order, invoking `on_entry` for each `<link rel="stylesheet">` href, each non-empty
- * `style` attribute, and each distinct adopted `CSSStyleSheet`'s CSS text encountered. */
+ * `<style>` element's text, each non-empty `style` attribute, and each distinct adopted
+ * `CSSStyleSheet`'s CSS text encountered. */
 async function walk_css_entries(
 	frame: FrameLike,
 	on_entry: (entry: CSSWalkEntry) => void,
@@ -52,10 +55,17 @@ async function walk_css_entries(
 				const sheet_css = Array.from(sheet.cssRules, (rule) => rule.cssText).join('\n')
 				found.push({ type: 'adopted', css: sheet_css })
 			}
+
 			for (const el of root.querySelectorAll('*')) {
 				if (el.matches('link[rel~="stylesheet" i]')) {
 					found.push({ type: 'link', href: (el as HTMLLinkElement).href })
+				} else if (el.matches('style')) {
+					const style_contents = el.textContent ?? ''
+					if (style_contents.trim().length > 0) {
+						found.push({ type: 'style', css: style_contents })
+					}
 				}
+
 				const style_attr = el.getAttribute('style')?.trim()
 				if (style_attr) {
 					found.push({ type: 'inline', css: style_attr })
@@ -117,6 +127,7 @@ export async function scrape_css(
 
 	const link_hrefs = new Set<string>()
 	const inline_sources: CSSInlineSource[] = []
+	const style_sources: CSSStyleSource[] = []
 	const adopted_sources: CSSAdoptedStylesheetSource[] = []
 
 	for (const frame of page.frames()) {
@@ -131,6 +142,12 @@ export async function scrape_css(
 					url: frame_url,
 					css: entry.css,
 				} satisfies CSSInlineSource)
+			} else if (entry.type === 'style') {
+				style_sources.push({
+					type: 'style',
+					url: frame_url,
+					css: entry.css,
+				} satisfies CSSStyleSource)
 			} else if (!seen_adopted_css.has(entry.css)) {
 				seen_adopted_css.add(entry.css)
 				adopted_sources.push({
@@ -176,7 +193,12 @@ export async function scrape_css(
 		}
 	}
 
-	sources.push(...adopted_sources, ...inline_sources)
+	// Adopted sheets are intentionally not cross-referenced against network-loaded or <style>
+	// sources. A constructed CSSStyleSheet has no URL, and its cssText is serialized by the
+	// browser (e.g. `#bb5555` becomes `rgb(187, 85, 85)`), so a stylesheet fetched and then
+	// adopted into a shadow root appears twice: once as a link/import and once as adopted.
+	// Matching on normalized content would fix this, but real-world impact is expected to be low.
+	sources.push(...adopted_sources, ...style_sources, ...inline_sources)
 
 	return sources
 }
