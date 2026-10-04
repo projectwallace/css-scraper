@@ -1,4 +1,4 @@
-@import url("imported-layer.css") layer(third-party);
+@import url('imported-layer.css') layer(third-party);
 
 .main {
 	color: #997777;

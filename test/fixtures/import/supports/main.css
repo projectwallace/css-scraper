@@ -1,4 +1,4 @@
-@import url("imported-grid.css") supports(display: grid);
+@import url('imported-grid.css') supports(display: grid);
 
 .main {
 	color: #995555;

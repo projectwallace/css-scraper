@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { scrape_css } from '../../src/index.ts'
 import { closeBrowser, newPage, type TestPage } from '../helpers/browser.ts'
+import { css_of } from '../helpers/css-source.ts'
 import { createFixtureServer, type FixtureServer } from '../helpers/server.ts'
 
 describe('web component adoptedStyleSheets', () => {
@@ -24,13 +25,20 @@ describe('web component adoptedStyleSheets', () => {
 		await page.close()
 	})
 
-	test('a shadow root with adoptedStyleSheets is captured', async () => {
-		const result = await scrape_css(page, `${server.url}/web-components/adopted-stylesheets/index.html`)
-		expect(result.join('\n')).toContain('.my-custom-element')
+	test('a shadow root with adoptedStyleSheets is captured as an "adopted-stylesheet" source', async () => {
+		const result = await scrape_css(
+			page,
+			`${server.url}/web-components/adopted-stylesheets/index.html`,
+		)
+		expect(css_of(result).join('\n')).toContain('.my-custom-element')
+		expect(result[0]).toMatchObject({ type: 'adopted-stylesheet' })
 	})
 
 	test('a shadow root with no adopted stylesheets contributes nothing', async () => {
-		const result = await scrape_css(page, `${server.url}/web-components/failure-no-adoption/index.html`)
+		const result = await scrape_css(
+			page,
+			`${server.url}/web-components/failure-no-adoption/index.html`,
+		)
 		expect(result).toEqual([])
 	})
 })

@@ -33,7 +33,7 @@ describe('deduplication', () => {
 	// the response-handling level in test/unit/dedup.test.ts instead.
 	test('two <link>s to the identical URL produce a single entry', async () => {
 		const result = await scrape_css(page, `${server.url}/dedup/same-url-identical/index.html`)
-		const matches = result.filter((css) => css.includes('.same-url-identical'))
+		const matches = result.filter((source) => source.css.includes('.same-url-identical'))
 		expect(matches).toHaveLength(1)
 	})
 
@@ -60,8 +60,11 @@ describe('deduplication', () => {
 			contentType: 'text/html',
 		})
 
-		const result = await scrape_css(page, `${server.url}/dedup/same-url-relative-absolute/index.html`)
-		const matches = result.filter((css) => css.includes('.same-url-relative-absolute'))
+		const result = await scrape_css(
+			page,
+			`${server.url}/dedup/same-url-relative-absolute/index.html`,
+		)
+		const matches = result.filter((source) => source.css.includes('.same-url-relative-absolute'))
 		expect(matches).toHaveLength(1)
 	})
 })

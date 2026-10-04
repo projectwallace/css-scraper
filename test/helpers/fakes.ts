@@ -38,6 +38,8 @@ export function fake_response(init: FakeResponseInit = {}): ResponseLike {
 export type FakePageInit = {
 	responses?: ResponseLike[]
 	goto?: (url: string) => Promise<unknown>
+	/** URLs that should be classified as `<link>`-originated; everything else is treated as `@import`. */
+	link_hrefs?: string[]
 }
 
 export function fake_page(init: FakePageInit = {}): PageLike {
@@ -58,7 +60,7 @@ export function fake_page(init: FakePageInit = {}): PageLike {
 			return undefined
 		},
 		evaluate() {
-			return Promise.resolve(undefined as never)
+			return Promise.resolve((init.link_hrefs ?? []) as never)
 		},
 		coverage: {
 			startCSSCoverage() {
@@ -73,7 +75,8 @@ export function fake_page(init: FakePageInit = {}): PageLike {
 			return this
 		},
 		off(event, listener) {
-			if (event === 'response') response_listeners.delete(listener as (response: ResponseLike) => void)
+			if (event === 'response')
+				response_listeners.delete(listener as (response: ResponseLike) => void)
 			return this
 		},
 		close() {

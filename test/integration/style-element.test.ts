@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest'
 import { scrape_css } from '../../src/index.ts'
 import { closeBrowser, newPage, type TestPage } from '../helpers/browser.ts'
+import { css_of } from '../helpers/css-source.ts'
 import { createFixtureServer, type FixtureServer } from '../helpers/server.ts'
 
 describe('<style> elements', () => {
@@ -24,26 +25,29 @@ describe('<style> elements', () => {
 		await page.close()
 	})
 
-	test('a static <style> element is captured as-authored', async () => {
+	test('a static <style> element is captured as a "style" source, as-authored', async () => {
 		const result = await scrape_css(page, `${server.url}/style-element/basic/index.html`)
-		expect(result.join('\n')).toContain('.style-element-basic')
+		expect(css_of(result).join('\n')).toContain('.style-element-basic')
+		expect(result[0]).toMatchObject({ type: 'style' })
 	})
 
 	test('multiple <style> elements are all captured, in document order', async () => {
 		const result = await scrape_css(page, `${server.url}/style-element/multiple/index.html`)
-		const combined = result.join('\n')
+		const combined = css_of(result).join('\n')
 		expect(combined).toContain('.style-element-first')
 		expect(combined).toContain('.style-element-second')
-		expect(combined.indexOf('.style-element-first')).toBeLessThan(combined.indexOf('.style-element-second'))
+		expect(combined.indexOf('.style-element-first')).toBeLessThan(
+			combined.indexOf('.style-element-second'),
+		)
 	})
 
 	test('document.createElement("style") content is captured', async () => {
 		const result = await scrape_css(page, `${server.url}/style-element/js-created/index.html`)
-		expect(result.join('\n')).toContain('.style-element-js-created')
+		expect(css_of(result).join('\n')).toContain('.style-element-js-created')
 	})
 
 	test('an empty <style> element produces no entry, not a crash', async () => {
 		const result = await scrape_css(page, `${server.url}/style-element/failure-empty/index.html`)
-		expect(result.join('')).not.toContain('undefined')
+		expect(css_of(result).join('')).not.toContain('undefined')
 	})
 })

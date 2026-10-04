@@ -16,8 +16,8 @@ const browser = await chromium.launch()
 const page = await browser.newPage()
 
 const css_sources = await scrape_css(page, 'https://projectwallace.com', {
-  exclude_unused_css: false,
-  resolve_source_maps: false,
+	exclude_unused_css: false,
+	resolve_source_maps: false,
 })
 await browser.close()
 
@@ -35,6 +35,7 @@ const css = join(css_sources)
 We aim to support as many types of CSS sources as possible. Below is a non-exhaustive list of possible sources we aim to find, at any depth or mixed usage. We aim to de-duplicate as much as possible, so that any source that's imported more than once is counted only once.
 
 ### Link
+
 - `<link href="style.css" rel="stylesheet">`
 - `<link href="style.css" rel="stylesheet alternate">`
 - `<link href="dark.css" rel="stylesheet" media="(prefers-color-scheme: dark)">`

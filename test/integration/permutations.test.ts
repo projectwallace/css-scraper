@@ -2,6 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test } fr
 import { scrape_css } from '../../src/index.ts'
 import { closeBrowser, newPage, type TestPage } from '../helpers/browser.ts'
 import { composePage } from '../helpers/compose.ts'
+import { css_of } from '../helpers/css-source.ts'
 import { INGREDIENTS } from '../helpers/ingredients.ts'
 import { powerset } from '../helpers/powerset.ts'
 import { createFixtureServer, type FixtureServer } from '../helpers/server.ts'
@@ -40,18 +41,21 @@ describe('CSS source permutations', () => {
 	test.each(combos.map((combo) => [combo] as const))('combo: %s', async (ids) => {
 		const path = composePage(server, ids)
 		const result = await scrape_css(page, `${server.url}${path}`)
-		const combined = result.join('\n')
+		const combined = css_of(result).join('\n')
 
 		const chosen = ids.map((id) => ingredient_by_id(id))
 
 		for (const ingredient of chosen.filter((ingredient) => ingredient.implemented)) {
-			expect(combined, `expected "${ingredient.id}" to be captured`).toContain(ingredient.expectedCss)
+			expect(combined, `expected "${ingredient.id}" to be captured`).toContain(
+				ingredient.expectedCss,
+			)
 		}
 
 		for (const ingredient of chosen.filter((ingredient) => !ingredient.implemented)) {
-			expect(combined, `"${ingredient.id}" is not implemented yet and should not appear`).not.toContain(
-				ingredient.expectedCss,
-			)
+			expect(
+				combined,
+				`"${ingredient.id}" is not implemented yet and should not appear`,
+			).not.toContain(ingredient.expectedCss)
 		}
 	})
 })
