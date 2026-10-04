@@ -29,7 +29,7 @@ export function is_css_response(response: ResponseLike): boolean {
 }
 
 type CSSWalkEntry =
-	| { type: 'link'; href: string }
+	| { type: 'link'; href: string; disabled?: string }
 	| { type: 'inline'; css: string }
 	| { type: 'adopted'; css: string }
 	| { type: 'style'; css: string }
@@ -58,7 +58,11 @@ async function walk_css_entries(
 
 			for (const el of root.querySelectorAll('*')) {
 				if (el.matches('link[rel~="stylesheet" i]')) {
-					found.push({ type: 'link', href: (el as HTMLLinkElement).href })
+					found.push({
+						type: 'link',
+						href: (el as HTMLLinkElement).href,
+						disabled: el.getAttribute('disabled') ?? undefined,
+					})
 				} else if (el.matches('style')) {
 					const style_contents = el.textContent ?? ''
 					if (style_contents.trim().length > 0) {
@@ -125,7 +129,7 @@ export async function scrape_css(
 		return []
 	}
 
-	const link_hrefs = new Set<string>()
+	const link_hrefs = new Map<string, string | undefined>()
 	const inline_sources: CSSInlineSource[] = []
 	const style_sources: CSSStyleSource[] = []
 	const adopted_sources: CSSAdoptedStylesheetSource[] = []
@@ -135,7 +139,7 @@ export async function scrape_css(
 		const seen_adopted_css = new Set<string>()
 		await walk_css_entries(frame, (entry) => {
 			if (entry.type === 'link') {
-				link_hrefs.add(entry.href)
+				link_hrefs.set(entry.href, entry.disabled)
 			} else if (entry.type === 'inline') {
 				inline_sources.push({
 					type: 'inline',
@@ -182,6 +186,7 @@ export async function scrape_css(
 				url: response_url,
 				rel: 'stylesheet',
 				css,
+				disabled: link_hrefs.get(response_url),
 			} satisfies CSSLinkSource)
 		} else {
 			sources.push({

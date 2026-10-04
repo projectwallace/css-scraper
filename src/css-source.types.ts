@@ -14,6 +14,7 @@ export type CSSLinkSource = CSSSourceBase & {
 	href: string
 	rel: string
 	media?: string
+	disabled?: string
 }
 
 export type CSSImportSource = CSSSourceBase & {

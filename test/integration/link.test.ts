@@ -58,7 +58,7 @@ describe('link stylesheets', () => {
 		expect(result).toEqual(load_expected_sources(server, 'link/media-forced-colors'))
 	})
 
-	test('a disabled link is not fetched at all', async () => {
+	test('a disabled link is captured, tagged with its disabled attribute', async () => {
 		const result = await scrape_css(page, `${server.url}/link/disabled/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'link/disabled'))
 	})

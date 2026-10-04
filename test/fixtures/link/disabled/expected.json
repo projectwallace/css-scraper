@@ -1,1 +1,10 @@
-[]
+[
+	{
+		"type": "link",
+		"href": "/link/disabled/style.css",
+		"url": "/link/disabled/style.css",
+		"rel": "stylesheet",
+		"css": ".disabled-link {\n\tcolor: #222222;\n}\n",
+		"disabled": ""
+	}
+]
