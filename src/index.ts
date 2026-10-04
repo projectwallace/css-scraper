@@ -13,7 +13,9 @@ type ScraperOptions = {
 	/** Use the coverage API to determine which CSS is used and only return that. Not yet implemented. */
 	exclude_unused_css?: boolean
 	/** Also resolve and return original sources via CSS source maps, where available. Not yet implemented. */
-	resolve_source_maps?: boolean
+	resolve_source_maps?: boolean,
+	/** Whether to also look for <element style="color: red"> and include in the response. Not yet implemented. */
+	include_inline_styles?: boolean
 }
 
 /** Whether a response is a successful, CSS-typed stylesheet response. */
@@ -25,47 +27,49 @@ export function is_css_response(response: ResponseLike): boolean {
 	return typeof content_type === 'string' && content_type.toLowerCase().startsWith('text/css')
 }
 
+type CSSWalkEntry = { type: 'link'; href: string } | { type: 'inline'; css: string }
+
+/** Walks the document and every nested open shadow root exactly once, in document order,
+ * invoking `on_entry` for each `<link rel="stylesheet">` href and each non-empty `style`
+ * attribute encountered. */
+async function walk_css_entries(
+	page: PageLike,
+	on_entry: (entry: CSSWalkEntry) => void,
+): Promise<void> {
+	const entries = await page.evaluate(() => {
+		const found: Array<{ type: 'link'; href: string } | { type: 'inline'; css: string }> = []
+		function visit(root: Document | ShadowRoot) {
+			for (const el of root.querySelectorAll('*')) {
+				if (el.matches('link[rel~="stylesheet" i]')) {
+					found.push({ type: 'link', href: (el as HTMLLinkElement).href })
+				}
+				const style_attr = el.getAttribute('style')?.trim()
+				if (style_attr) {
+					found.push({ type: 'inline', css: style_attr })
+				}
+				if (el.shadowRoot) {
+					visit(el.shadowRoot)
+				}
+			}
+		}
+		visit(document)
+		return found
+	})
+	for (const entry of entries) {
+		on_entry(entry)
+	}
+}
+
 /** Resolves the absolute hrefs of all `<link rel="stylesheet">` elements currently in the
  * document, including those nested inside open shadow roots. */
 export async function collect_link_hrefs(page: PageLike): Promise<Set<string>> {
-	const hrefs = await page.evaluate(() => {
-		const found: string[] = []
-		function visit(root: Document | ShadowRoot) {
-			for (const link of root.querySelectorAll('link[rel~="stylesheet" i]')) {
-				found.push((link as HTMLLinkElement).href)
-			}
-			for (const el of root.querySelectorAll('*')) {
-				if (el.shadowRoot) {
-					visit(el.shadowRoot)
-				}
-			}
+	const hrefs = new Set<string>()
+	await walk_css_entries(page, (entry) => {
+		if (entry.type === 'link') {
+			hrefs.add(entry.href)
 		}
-		visit(document)
-		return found
 	})
-	return new Set(hrefs)
-}
-
-async function collect_inline_styles(page: PageLike): Promise<Array<string>> {
-	const inline_styles = await page.evaluate(() => {
-		const found: string[] = []
-		function visit(root: Document | ShadowRoot) {
-			for (const element of root.querySelectorAll('[style]')) {
-				const attr_contents = element.getAttribute('style')?.trim()
-				if (attr_contents) {
-					found.push(attr_contents)
-				}
-			}
-			for (const el of root.querySelectorAll('*')) {
-				if (el.shadowRoot) {
-					visit(el.shadowRoot)
-				}
-			}
-		}
-		visit(document)
-		return found
-	})
-	return inline_styles
+	return hrefs
 }
 
 /** Resolves the CSS text of every `document.adoptedStyleSheets` /
@@ -138,7 +142,16 @@ export async function scrape_css(
 		return []
 	}
 
-	const link_hrefs = await collect_link_hrefs(page)
+	const link_hrefs = new Set<string>()
+	const inline_sources: CSSInlineSource[] = []
+	await walk_css_entries(page, (entry) => {
+		if (entry.type === 'link') {
+			link_hrefs.add(entry.href)
+		} else {
+			inline_sources.push({ type: 'inline', url, css: entry.css } satisfies CSSInlineSource)
+		}
+	})
+
 	const deduplicator = create_deduplicator()
 	const sources: CSSSource[] = []
 
@@ -182,14 +195,7 @@ export async function scrape_css(
 		} satisfies CSSAdoptedStylesheetSource)
 	}
 
-	const inline_css = await collect_inline_styles(page)
-	for (const inline_style of inline_css) {
-		sources.push({
-			type: 'inline',
-			url,
-			css: inline_style,
-		} satisfies CSSInlineSource)
-	}
+	sources.push(...inline_sources)
 
 	return sources
 }

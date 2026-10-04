@@ -42,7 +42,7 @@ export const INGREDIENTS: Ingredient[] = [
 		id: 'inline-style-attr',
 		bodyEnd: '<div style="--ingredient-inline-style-attr: 444444"></div>',
 		expectedCss: '--ingredient-inline-style-attr: 444444',
-		implemented: false,
+		implemented: true,
 	},
 	{
 		id: 'cssom-insert-rule',
