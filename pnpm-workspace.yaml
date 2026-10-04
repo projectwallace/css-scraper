@@ -9,3 +9,6 @@ minimumReleaseAgeExclude:
 
 # Prevent trust level downgrades compared to previously installed packages
 trustPolicy: no-downgrade
+
+overrides:
+  why-is-node-running: 3.2.1
