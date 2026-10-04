@@ -27,7 +27,11 @@ export async function scrape_css(
 		}
 	})
 
-	await page.goto(url)
+	try {
+		await page.goto(url)
+	} catch {
+		return []
+	}
 
 	const link_hrefs = new Set<string>(
 		await page.evaluate(() =>
@@ -41,7 +45,12 @@ export async function scrape_css(
 	const seen_per_url = new Map<string, Set<string>>()
 
 	for (const response of css_responses) {
-		const css = await response.text()
+		let css: string
+		try {
+			css = await response.text()
+		} catch {
+			continue
+		}
 		const response_url = response.url()
 
 		const seen = seen_per_url.get(response_url)
