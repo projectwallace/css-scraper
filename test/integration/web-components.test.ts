@@ -42,3 +42,93 @@ describe('web component adoptedStyleSheets', () => {
 		expect(result).toEqual([])
 	})
 })
+
+describe('web component <link> stylesheets', () => {
+	let server: FixtureServer
+	let page: TestPage
+
+	beforeAll(async () => {
+		server = await createFixtureServer()
+	})
+
+	afterAll(async () => {
+		await server.close()
+		await closeBrowser()
+	})
+
+	beforeEach(async () => {
+		page = await newPage()
+	})
+
+	afterEach(async () => {
+		await page.close()
+	})
+
+	test('a <link rel="stylesheet"> inside a shadow root is captured as a "link" source', async () => {
+		const result = await scrape_css(page, `${server.url}/web-components/shadow-link/index.html`)
+		expect(css_of(result).join('\n')).toContain('.shadow-link-element')
+		expect(result[0]).toMatchObject({ type: 'link' })
+	})
+})
+
+describe('web component @import', () => {
+	let server: FixtureServer
+	let page: TestPage
+
+	beforeAll(async () => {
+		server = await createFixtureServer()
+	})
+
+	afterAll(async () => {
+		await server.close()
+		await closeBrowser()
+	})
+
+	beforeEach(async () => {
+		page = await newPage()
+	})
+
+	afterEach(async () => {
+		await page.close()
+	})
+
+	test('an @import inside a shadow root <style> is resolved and captured as an "import" source', async () => {
+		const result = await scrape_css(
+			page,
+			`${server.url}/web-components/shadow-import/index.html`,
+		)
+		expect(css_of(result).join('\n')).toContain('.shadow-import-element')
+		expect(result.some((source) => source.type === 'import')).toBe(true)
+	})
+})
+
+describe('web component inline style="" attributes', () => {
+	let server: FixtureServer
+	let page: TestPage
+
+	beforeAll(async () => {
+		server = await createFixtureServer()
+	})
+
+	afterAll(async () => {
+		await server.close()
+		await closeBrowser()
+	})
+
+	beforeEach(async () => {
+		page = await newPage()
+	})
+
+	afterEach(async () => {
+		await page.close()
+	})
+
+	test('a style="" attribute inside a shadow root is captured as an "inline" source', async () => {
+		const result = await scrape_css(
+			page,
+			`${server.url}/web-components/shadow-inline-style/index.html`,
+		)
+		expect(css_of(result).join('\n')).toContain('#bb4444')
+		expect(result[0]).toMatchObject({ type: 'inline' })
+	})
+})

@@ -1,4 +1,9 @@
-import type { CSSImportSource, CSSLinkSource, CSSSource } from './css-source.types.ts'
+import type {
+	CSSAdoptedStylesheetSource,
+	CSSImportSource,
+	CSSLinkSource,
+	CSSSource,
+} from './css-source.types.ts'
 import type { PageLike, ResponseLike } from './types.ts'
 
 export type { CSSSource } from './css-source.types.ts'
@@ -19,14 +24,54 @@ export function is_css_response(response: ResponseLike): boolean {
 	return typeof content_type === 'string' && content_type.toLowerCase().startsWith('text/css')
 }
 
-/** Resolves the absolute hrefs of all `<link rel="stylesheet">` elements currently in the document. */
+/** Resolves the absolute hrefs of all `<link rel="stylesheet">` elements currently in the
+ * document, including those nested inside open shadow roots. */
 export async function collect_link_hrefs(page: PageLike): Promise<Set<string>> {
-	const hrefs = await page.evaluate(() =>
-		Array.from(document.querySelectorAll('link[rel~="stylesheet" i]')).map(
-			(link) => (link as HTMLLinkElement).href,
-		),
-	)
+	const hrefs = await page.evaluate(() => {
+		const found: string[] = []
+		function visit(root: Document | ShadowRoot) {
+			for (const link of root.querySelectorAll('link[rel~="stylesheet" i]')) {
+				found.push((link as HTMLLinkElement).href)
+			}
+			for (const el of root.querySelectorAll('*')) {
+				if (el.shadowRoot) {
+					visit(el.shadowRoot)
+				}
+			}
+		}
+		visit(document)
+		return found
+	})
 	return new Set(hrefs)
+}
+
+/** Resolves the CSS text of every `document.adoptedStyleSheets` /
+ * `shadowRoot.adoptedStyleSheets` entry currently in the document, including those adopted
+ * inside open shadow roots. Each distinct `CSSStyleSheet` object is only read once, and
+ * identical resulting CSS text is deduped away. */
+export async function collect_adopted_stylesheets(page: PageLike): Promise<string[]> {
+	const css_list = await page.evaluate(() => {
+		const seen_sheets = new Set<CSSStyleSheet>()
+		const found: string[] = []
+
+		function visit(root: Document | ShadowRoot) {
+			for (const sheet of root.adoptedStyleSheets) {
+				if (seen_sheets.has(sheet)) {
+					continue
+				}
+				seen_sheets.add(sheet)
+				found.push(Array.from(sheet.cssRules, (rule) => rule.cssText).join('\n'))
+			}
+			for (const el of root.querySelectorAll('*')) {
+				if (el.shadowRoot) {
+					visit(el.shadowRoot)
+				}
+			}
+		}
+		visit(document)
+		return found
+	})
+	return Array.from(new Set(css_list))
 }
 
 /** Tracks which (url, css) pairs have already been seen, to collapse identical repeat responses. */
@@ -102,6 +147,15 @@ export async function scrape_css(
 				css,
 			} satisfies CSSImportSource)
 		}
+	}
+
+	const adopted_css = await collect_adopted_stylesheets(page)
+	for (const css of adopted_css) {
+		sources.push({
+			type: 'adopted-stylesheet',
+			url,
+			css,
+		} satisfies CSSAdoptedStylesheetSource)
 	}
 
 	return sources
