@@ -62,14 +62,6 @@ export function fake_page(init: FakePageInit = {}): PageLike {
 		frames() {
 			return [{ url: () => current_url, evaluate: () => Promise.resolve([] as never) }]
 		},
-		coverage: {
-			startCSSCoverage() {
-				return Promise.resolve()
-			},
-			stopCSSCoverage() {
-				return Promise.resolve([])
-			},
-		},
 		on(event, listener) {
 			if (event === 'response') response_listeners.add(listener as (response: ResponseLike) => void)
 			return this
