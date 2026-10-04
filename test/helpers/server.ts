@@ -18,7 +18,7 @@ function content_type_for(path: string): string {
 	return CONTENT_TYPES[ext] ?? 'application/octet-stream'
 }
 
-export type RouteResponse = {
+type RouteResponse = {
 	body: string
 	contentType?: string
 	status?: number

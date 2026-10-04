@@ -12,7 +12,7 @@ export type TestPage = PageLike & {
 
 let browser: Browser | undefined
 
-export async function getBrowser(): Promise<Browser> {
+async function getBrowser(): Promise<Browser> {
 	if (!browser) {
 		// Use the CI runner's system Chrome instead of Playwright's bundled
 		// Chromium, so no separate `playwright install` step is needed.
