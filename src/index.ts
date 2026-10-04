@@ -117,14 +117,14 @@ export async function scrape_css(
 
 	const link_hrefs = new Set<string>()
 	const inline_sources: CSSInlineSource[] = []
-	const adopted_css: string[] = []
+	const adopted_css: Set<string> = new Set()
 	await walk_css_entries(page, (entry) => {
 		if (entry.type === 'link') {
 			link_hrefs.add(entry.href)
 		} else if (entry.type === 'inline') {
 			inline_sources.push({ type: 'inline', url, css: entry.css } satisfies CSSInlineSource)
 		} else {
-			adopted_css.push(entry.css)
+			adopted_css.add(entry.css)
 		}
 	})
 
@@ -162,7 +162,7 @@ export async function scrape_css(
 		}
 	}
 
-	for (const css of new Set(adopted_css)) {
+	for (const css of adopted_css) {
 		sources.push({
 			type: 'adopted-stylesheet',
 			url,
