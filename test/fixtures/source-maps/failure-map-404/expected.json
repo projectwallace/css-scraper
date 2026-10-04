@@ -1,9 +1,0 @@
-[
-	{
-		"type": "link",
-		"href": "/source-maps/failure-map-404/style.css",
-		"url": "/source-maps/failure-map-404/style.css",
-		"rel": "stylesheet",
-		"css": ".shipped {\n\tcolor: #dd2222;\n}\n/*# sourceMappingURL=missing.css.map */\n"
-	}
-]

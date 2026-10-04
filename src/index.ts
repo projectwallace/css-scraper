@@ -11,15 +11,6 @@ import type { FrameLike, PageLike, ResponseLike } from './types.ts'
 
 export type { CSSSource } from './css-source.types.ts'
 
-type ScraperOptions = {
-	/** Use the coverage API to determine which CSS is used and only return that. Not yet implemented. */
-	exclude_unused_css?: boolean
-	/** Also resolve and return original sources via CSS source maps, where available. Not yet implemented. */
-	resolve_source_maps?: boolean
-	/** Whether to also look for <element style="color: red"> and include in the response. Not yet implemented. */
-	include_inline_styles?: boolean
-}
-
 /** Whether a response is a successful, CSS-typed stylesheet response. */
 export function is_css_response(response: ResponseLike): boolean {
 	if (!response.ok()) {
@@ -135,11 +126,7 @@ export function create_deduplicator() {
 	}
 }
 
-export async function scrape_css(
-	page: PageLike,
-	url: string,
-	options: ScraperOptions = {},
-): Promise<CSSSource[]> {
+export async function scrape_css(page: PageLike, url: string): Promise<CSSSource[]> {
 	const css_responses: ResponseLike[] = []
 
 	page.on('response', (response) => {

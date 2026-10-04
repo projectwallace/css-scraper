@@ -1,9 +1,0 @@
-[
-	{
-		"type": "link",
-		"href": "/source-maps/basic/style.css",
-		"url": "/source-maps/basic/style.css",
-		"rel": "stylesheet",
-		"css": ".shipped {\n\tcolor: #dd1111;\n}\n/*# sourceMappingURL=style.css.map */\n"
-	}
-]
