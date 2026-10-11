@@ -16,7 +16,7 @@ const browser = await chromium.launch()
 const page = await browser.newPage()
 
 const css_sources = await scrape_css(page, 'https://projectwallace.com', {
-  exclude_unused_css: false,
+	exclude_unused_css: false,
 })
 await browser.close()
 
