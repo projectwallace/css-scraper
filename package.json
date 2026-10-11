@@ -31,23 +31,27 @@
 	},
 	"scripts": {
 		"build": "tsdown",
-		"test": "vitest --coverage",
-		"check": "tsc",
+		"test": "vitest --coverage --project=unit --project=integration",
+		"test:unit": "vitest --project=unit",
+		"test:integration": "vitest --project=integration",
+		"test:matrix": "vitest --project=matrix",
+		"check": "tsc && tsc --project test",
 		"lint": "oxlint && oxfmt --check",
 		"knip": "knip"
 	},
 	"devDependencies": {
 		"@projectwallace/preset-oxlint": "^0.0.11",
 		"@types/node": "^26.0.1",
-		"@vitest/coverage-v8": "^5.0.3",
+		"@vitest/coverage-v8": "^5.0.0",
 		"knip": "^6.31.0",
-		"oxfmt": "^0.71.0",
+		"oxfmt": ">=0.69.0 <1.0.0",
 		"oxlint": "^1.74.0",
+		"playwright": "^1.11.0",
 		"publint": "^0.3.21",
 		"tsdown": "^0.23.0",
 		"typescript": "^7.0.2",
 		"vite": "^8.1.5",
-		"vitest": "^5.0.3"
+		"vitest": "^5.0.0"
 	},
 	"devEngines": {
 		"packageManager": {

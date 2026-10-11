@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/link/basic/style.css",
+		"url": "/link/basic/style.css",
+		"rel": "stylesheet",
+		"css": ".basic-link {\n\tcolor: #abc123;\n}\n"
+	}
+]

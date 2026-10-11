@@ -1,8 +1,7 @@
 import type { KnipConfig } from 'knip'
 
 const config: KnipConfig = {
-	project: ['src/**/*.ts'],
-	ignoreDependencies: ['@projectwallace/preset-oxlint'],
+	project: ['src/**/*.ts', 'test/**/*.ts'],
 }
 
 export default config

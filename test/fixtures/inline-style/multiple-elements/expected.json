@@ -1,0 +1,12 @@
+[
+	{
+		"type": "inline",
+		"url": "/inline-style/multiple-elements/index.html",
+		"css": "color: #771111"
+	},
+	{
+		"type": "inline",
+		"url": "/inline-style/multiple-elements/index.html",
+		"css": "color: #772222"
+	}
+]

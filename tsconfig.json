@@ -17,7 +17,9 @@
 		"declaration": true,
 		"rootDir": "src",
 		"rootDirs": ["src"],
-		"outDir": "dist"
+		"outDir": "dist",
+		"allowImportingTsExtensions": true,
+		"noEmit": true
 	},
 	"include": ["src/index.ts"],
 	"exclude": ["node_modules"]

@@ -1,0 +1,7 @@
+[
+	{
+		"type": "adopted-stylesheet",
+		"url": "/web-components/adopted-same-css-twice/index.html",
+		"css": ".adopted { color: rgb(187, 17, 17); }"
+	}
+]

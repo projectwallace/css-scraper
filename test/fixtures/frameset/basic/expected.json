@@ -1,0 +1,16 @@
+[
+	{
+		"type": "link",
+		"href": "/frameset/basic/left.css",
+		"url": "/frameset/basic/left.css",
+		"rel": "stylesheet",
+		"css": ".frameset-left {\n\tcolor: #aa3311;\n}\n"
+	},
+	{
+		"type": "link",
+		"href": "/frameset/basic/right.css",
+		"url": "/frameset/basic/right.css",
+		"rel": "stylesheet",
+		"css": ".frameset-right {\n\tcolor: #11aa33;\n}\n"
+	}
+]

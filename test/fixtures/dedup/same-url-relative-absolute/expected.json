@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/dedup/same-url-relative-absolute/style.css",
+		"url": "/dedup/same-url-relative-absolute/style.css",
+		"rel": "stylesheet",
+		"css": ".same-url-relative-absolute {\n\tcolor: #dd7777;\n}\n"
+	}
+]

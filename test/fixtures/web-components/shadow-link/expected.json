@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/web-components/shadow-link/style.css",
+		"url": "/web-components/shadow-link/style.css",
+		"rel": "stylesheet",
+		"css": ".shadow-link-element {\n\tcolor: #bb2222;\n}\n"
+	}
+]

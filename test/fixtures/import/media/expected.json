@@ -1,0 +1,15 @@
+[
+	{
+		"type": "link",
+		"href": "/import/media/main.css",
+		"url": "/import/media/main.css",
+		"rel": "stylesheet",
+		"css": "@import url('imported-dark.css') (prefers-color-scheme: dark);\n\n.main {\n\tcolor: #993333;\n}\n"
+	},
+	{
+		"type": "import",
+		"href": "/import/media/imported-dark.css",
+		"url": "/import/media/imported-dark.css",
+		"css": ".imported-dark {\n\tcolor: #994444;\n}\n"
+	}
+]

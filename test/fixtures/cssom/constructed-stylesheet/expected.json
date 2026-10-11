@@ -1,0 +1,7 @@
+[
+	{
+		"type": "adopted-stylesheet",
+		"url": "/cssom/constructed-stylesheet/index.html",
+		"css": ".cssom-constructed { color: rgb(136, 34, 34); }"
+	}
+]

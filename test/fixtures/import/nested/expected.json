@@ -1,0 +1,21 @@
+[
+	{
+		"type": "link",
+		"href": "/import/nested/a.css",
+		"url": "/import/nested/a.css",
+		"rel": "stylesheet",
+		"css": "@import url('b.css');\n\n.chain-a {\n\tcolor: #aa1111;\n}\n"
+	},
+	{
+		"type": "import",
+		"href": "/import/nested/b.css",
+		"url": "/import/nested/b.css",
+		"css": "@import url('c.css');\n\n.chain-b {\n\tcolor: #aa2222;\n}\n"
+	},
+	{
+		"type": "import",
+		"href": "/import/nested/c.css",
+		"url": "/import/nested/c.css",
+		"css": ".chain-c {\n\tcolor: #aa3333;\n}\n"
+	}
+]

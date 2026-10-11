@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/import/failure-404-import/main.css",
+		"url": "/import/failure-404-import/main.css",
+		"rel": "stylesheet",
+		"css": "@import url('missing.css');\n\n.main {\n\tcolor: #aa4444;\n}\n"
+	}
+]

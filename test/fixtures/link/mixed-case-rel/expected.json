@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/link/mixed-case-rel/style.css",
+		"url": "/link/mixed-case-rel/style.css",
+		"rel": "stylesheet",
+		"css": ".mixed-case-rel {\n\tcolor: #ee8888;\n}\n"
+	}
+]

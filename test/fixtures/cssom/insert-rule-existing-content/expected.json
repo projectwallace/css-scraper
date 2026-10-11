@@ -1,0 +1,12 @@
+[
+	{
+		"type": "style",
+		"url": "/cssom/insert-rule-existing-content/index.html",
+		"css": "\n\t\t\t.existing-rule {\n\t\t\t\tcolor: #223344;\n\t\t\t}\n\t\t"
+	},
+	{
+		"type": "cssom",
+		"url": "/cssom/insert-rule-existing-content/index.html",
+		"css": ".cssom-insert-rule { color: rgb(136, 17, 17); }"
+	}
+]
