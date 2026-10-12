@@ -17,5 +17,5 @@ export async function scrape_css(page: PageLike, url: string): Promise<CSSSource
 	const dom = await collect_dom_css(page)
 	const network_sources = await cross_check_network_responses(css_responses, dom.link_hrefs)
 
-	return [...network_sources, ...dom.sources]
+	return network_sources.concat(dom.sources)
 }

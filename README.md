@@ -10,7 +10,7 @@ npm install @projectwallace/css-scraper
 
 ```js
 import { chromium } from 'playwright'
-import { scrape_css, join } from '@projectwallace/scrape-css'
+import { scrape_css } from '@projectwallace/scrape-css'
 
 const browser = await chromium.launch()
 const page = await browser.newPage()
@@ -18,7 +18,7 @@ const page = await browser.newPage()
 const css_sources = await scrape_css(page, 'https://projectwallace.com')
 await browser.close()
 
-const css = css_sources.join((css_source) => css.source.css).join('\n')
+const css = css_sources.map((css_source) => css.source.css).join('\n')
 ```
 
 ## Design principles
