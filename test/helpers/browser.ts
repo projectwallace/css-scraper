@@ -15,9 +15,7 @@ let browser: Browser | undefined
 
 async function getBrowser(): Promise<Browser> {
 	if (!browser) {
-		// Use the CI runner's system Chrome instead of Playwright's bundled
-		// Chromium, so no separate `playwright install` step is needed.
-		browser = await chromium.launch(process.env.CI ? { channel: 'chrome' } : {})
+		browser = await chromium.launch()
 	}
 	return browser
 }
