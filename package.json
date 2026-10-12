@@ -1,6 +1,6 @@
 {
 	"name": "@projectwallace/css-scraper",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Get all the CSS from a webpage",
 	"keywords": [
 		"css",
