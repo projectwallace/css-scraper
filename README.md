@@ -10,15 +10,36 @@ npm install @projectwallace/css-scraper
 
 ```js
 import { chromium } from 'playwright'
-import { scrape_css } from '@projectwallace/scrape-css'
+import { track_css_responses, collect_css } from '@projectwallace/css-scraper'
+
+const browser = await chromium.launch()
+const page = await browser.newPage()
+
+// Start tracking before the page starts loading, so no stylesheet response is missed
+const css_responses = track_css_responses(page)
+
+// Load the page however you like: throttling, headers, auth, scripted interactions...
+await page.goto('https://projectwallace.com')
+
+const css_sources = await collect_css(page, css_responses)
+await browser.close()
+
+const css = css_sources.map((css_source) => css_source.css).join('\n')
+```
+
+### Shorthand
+
+When a plain `page.goto(url)` is all you need, `scrape_css` does the tracking, navigation and collecting in one call:
+
+```js
+import { chromium } from 'playwright'
+import { scrape_css } from '@projectwallace/css-scraper'
 
 const browser = await chromium.launch()
 const page = await browser.newPage()
 
 const css_sources = await scrape_css(page, 'https://projectwallace.com')
 await browser.close()
-
-const css = css_sources.map((css_source) => css.source.css).join('\n')
 ```
 
 ## Design principles
