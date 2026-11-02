@@ -37,6 +37,8 @@ export function fake_response(init: FakeResponseInit = {}): ResponseLike {
 
 export type FakePageInit = {
 	responses?: ResponseLike[]
+	/** What the in-browser DOM walk returns, e.g. `{ type: 'link', href, disabled }`. */
+	dom_entries?: unknown[]
 	goto?: (url: string) => Promise<unknown>
 }
 
@@ -54,7 +56,12 @@ export function fake_page(init: FakePageInit = {}): PageLike {
 			return result
 		},
 		frames() {
-			return [{ url: () => current_url, evaluate: () => Promise.resolve([] as never) }]
+			return [
+				{
+					url: () => current_url,
+					evaluate: () => Promise.resolve((init.dom_entries ?? []) as never),
+				},
+			]
 		},
 		on(event, listener) {
 			if (event === 'response') response_listeners.add(listener as (response: ResponseLike) => void)
