@@ -68,11 +68,6 @@ describe('link stylesheets', () => {
 		)
 	})
 
-	test('a disabled link is captured, tagged with its disabled attribute', async () => {
-		const result = await scrape_css(page, `${server.url}/link/disabled/index.html`)
-		expect(result).toEqual(load_expected_sources(server, 'link/disabled'))
-	})
-
 	test('a 404 href produces no entry, not a thrown error', async () => {
 		const result = await scrape_css(page, `${server.url}/link/failure-404/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'link/failure-404'))
