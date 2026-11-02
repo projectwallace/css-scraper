@@ -34,12 +34,12 @@ describe('link stylesheets', () => {
 		expect(result).toEqual(load_expected_sources(server, 'link/basic'))
 	})
 
-	test('rel="STYLESHEET" (any case) is still classified as a link source', async () => {
+	test('rel="STYLESHEET" (any case) is still classified as a link source, with rel lowercased', async () => {
 		const result = await scrape_css(page, `${server.url}/link/mixed-case-rel/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'link/mixed-case-rel'))
 	})
 
-	test('rel="stylesheet alternate" is captured', async () => {
+	test('rel="stylesheet alternate" is captured, keeping both keywords in rel', async () => {
 		const result = await scrape_css(page, `${server.url}/link/alternate/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'link/alternate'))
 	})
@@ -66,6 +66,18 @@ describe('link stylesheets', () => {
 		expect(result.sort(by_css)).toEqual(
 			load_expected_sources(server, 'link/media-forced-colors').sort(by_css),
 		)
+	})
+
+	// A stylesheet that is only preloaded and never applied is not covered here: whether its
+	// response is recorded before the load event is up to the browser's timing.
+	test('a stylesheet that is both preloaded and linked is captured once, as a link source', async () => {
+		const result = await scrape_css(page, `${server.url}/link/preload-and-stylesheet/index.html`)
+		expect(result).toEqual(load_expected_sources(server, 'link/preload-and-stylesheet'))
+	})
+
+	test('a <link> inside <noscript> is not captured, as it does not apply with scripting on', async () => {
+		const result = await scrape_css(page, `${server.url}/link/noscript/index.html`)
+		expect(result).toEqual(load_expected_sources(server, 'link/noscript'))
 	})
 
 	test('a 404 href produces no entry, not a thrown error', async () => {

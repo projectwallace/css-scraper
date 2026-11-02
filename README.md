@@ -42,6 +42,25 @@ const css_sources = await scrape_css(page, 'https://projectwallace.com')
 await browser.close()
 ```
 
+`scrape_css` rejects when the navigation fails (DNS error, timeout, ...), so a failed scrape can be told apart from a page without CSS. It accepts `waitUntil` and `timeout`, which are passed to `page.goto()`.
+
+### Errors while collecting
+
+A frame or stylesheet body that cannot be read (a detached frame, a response body the browser already dropped) is skipped, so the rest of the page is still collected. Pass `on_error` to `scrape_css` or `collect_css` to find out about it:
+
+```js
+const css_sources = await collect_css(page, css_responses, {
+	on_error({ source, url, error }) {
+		// source is 'frame' or 'response'
+		console.warn(`Skipped ${source} ${url}`, error)
+	},
+})
+```
+
+### Stylesheets without a recorded response
+
+A `<link>` stylesheet that loaded, but has no response recorded by `track_css_responses` (it came from the cache or a service worker, or tracking started late), is fetched again from the page, as long as it is served as `text/css` and readable from the page. `@import`ed stylesheets cannot be recovered this way.
+
 ## Design principles
 
 - Scrape every stylesheet the page declares, regardless of whether its conditions currently apply. A `<link href="dark.css" rel="stylesheet" media="(prefers-color-scheme: dark)">` is scraped even when the user prefers a light color scheme, because the browser downloads it anyway and the page's full CSS is what we want.

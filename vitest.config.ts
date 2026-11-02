@@ -4,7 +4,8 @@ export default defineConfig({
 	test: {
 		coverage: {
 			provider: 'v8',
-			exclude: ['test/**'],
+			// src/browser.ts runs inside the browser via Playwright, where Node's v8 coverage cannot see it
+			exclude: ['test/**', 'src/browser.ts'],
 		},
 		projects: [
 			{

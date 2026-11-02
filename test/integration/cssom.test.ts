@@ -38,6 +38,11 @@ describe('CSSOM-added rules', () => {
 		expect(result).toEqual(load_expected_sources(server, 'cssom/insert-rule-existing-content'))
 	})
 
+	test('a rule added via insertRule() to a linked stylesheet is captured as a "cssom" source next to the link', async () => {
+		const result = await scrape_css(page, `${server.url}/cssom/insert-rule-link/index.html`)
+		expect(result).toEqual(load_expected_sources(server, 'cssom/insert-rule-link'))
+	})
+
 	test('a constructed CSSStyleSheet via replaceSync() is captured as an "adopted-stylesheet" source', async () => {
 		const result = await scrape_css(page, `${server.url}/cssom/constructed-stylesheet/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'cssom/constructed-stylesheet'))

@@ -9,7 +9,7 @@ export interface ResponseLike {
 	ok(): boolean
 	url(): string
 	status(): number
-	headerValue(): Promise<null | string>
+	headerValue(name: string): Promise<null | string>
 	headers(): Record<string, string>
 	request(): RequestLike
 	text(): Promise<string>
@@ -18,7 +18,7 @@ export interface ResponseLike {
 /** A single browsing context: the top-level document, or a nested <iframe>/<frame>. */
 export interface FrameLike {
 	url(): string
-	evaluate<R>(fn: () => R | Promise<R>): Promise<R>
+	evaluate<R, A = undefined>(fn: (arg: A) => R | Promise<R>, arg?: A): Promise<R>
 }
 
 export interface PageLike {
@@ -34,3 +34,15 @@ export interface PageLike {
 	on(event: 'request', listener: (request: RequestLike) => void): unknown
 	on(event: 'response', listener: (response: ResponseLike) => void): unknown
 }
+
+/** Something that went wrong while collecting, and was skipped so the rest of the page could
+ * still be collected. */
+export interface ScrapeError {
+	/** `frame`: a frame's DOM could not be read. `response`: a stylesheet response's body could not be read. */
+	source: 'frame' | 'response'
+	/** The URL of the frame or the response. */
+	url: string
+	error: unknown
+}
+
+export type OnScrapeError = (error: ScrapeError) => void

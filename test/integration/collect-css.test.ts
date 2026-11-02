@@ -53,10 +53,17 @@ describe('collect_css after the caller navigates', () => {
 		}
 	})
 
-	test('misses network stylesheets when tracking starts after navigation', async () => {
+	test('fetches loaded <link> stylesheets again when tracking starts after navigation', async () => {
 		await page.goto(`${server.url}/link/basic/index.html`)
 		const css_responses = track_css_responses(page)
 		const result = await collect_css(page, css_responses)
-		expect(result.filter((source) => source.type === 'link')).toEqual([])
+		expect(result).toEqual(load_expected_sources(server, 'link/basic'))
+	})
+
+	test('cannot recover @import stylesheets when tracking starts after navigation', async () => {
+		await page.goto(`${server.url}/import/plain/index.html`)
+		const css_responses = track_css_responses(page)
+		const result = await collect_css(page, css_responses)
+		expect(result.filter((source) => source.type === 'import')).toEqual([])
 	})
 })

@@ -1,0 +1,9 @@
+[
+	{
+		"type": "link",
+		"href": "/link/preload-and-stylesheet/style.css",
+		"url": "/link/preload-and-stylesheet/style.css",
+		"rel": "stylesheet",
+		"css": ".preloaded {\n\tcolor: #345678;\n}\n"
+	}
+]

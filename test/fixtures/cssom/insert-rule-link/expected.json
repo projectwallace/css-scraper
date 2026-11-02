@@ -1,0 +1,14 @@
+[
+	{
+		"type": "link",
+		"href": "/cssom/insert-rule-link/style.css",
+		"url": "/cssom/insert-rule-link/style.css",
+		"rel": "stylesheet",
+		"css": ".linked-sheet {\n\tcolor: #112233;\n}\n"
+	},
+	{
+		"type": "cssom",
+		"url": "/cssom/insert-rule-link/index.html",
+		"css": ".cssom-insert-rule-link { color: rgb(136, 17, 17); }"
+	}
+]

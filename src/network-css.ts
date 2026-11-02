@@ -1,5 +1,5 @@
-import type { CSSImportSource, CSSLinkSource, CSSSource } from './css-source.types.ts'
-import type { PageLike, ResponseLike } from './types.ts'
+import type { CSSImportSource, CSSLinkSource } from './css-source.types.ts'
+import type { OnScrapeError, PageLike, ResponseLike } from './types.ts'
 
 /** Whether a response is a successful, CSS-typed stylesheet response. */
 export function is_css_response(response: ResponseLike): boolean {
@@ -44,52 +44,64 @@ export function create_deduplicator() {
 	}
 }
 
-/** Turns the recorded responses into sources: a response whose URL is a `<link>` in the DOM
- * becomes a link source (carrying its `disabled` state), anything else an import source.
+/** A recorded stylesheet response with its body read. */
+export interface FetchedStylesheet {
+	url: string
+	css: string
+}
+
+/** Reads the bodies of the recorded responses, collapsing identical repeats. A body that can no
+ * longer be read (e.g. the page navigated away and the browser dropped it) is reported to
+ * `on_error` and skipped. */
+export async function read_responses(
+	css_responses: ResponseLike[],
+	on_error?: OnScrapeError,
+): Promise<FetchedStylesheet[]> {
+	const deduplicator = create_deduplicator()
+	const stylesheets: FetchedStylesheet[] = []
+
+	for (const response of css_responses) {
+		const url = response.url()
+		let css: string
+		try {
+			css = await response.text()
+		} catch (error) {
+			on_error?.({ source: 'response', url, error })
+			continue
+		}
+
+		if (!deduplicator.is_duplicate(url, css)) {
+			stylesheets.push({ url, css })
+		}
+	}
+
+	return stylesheets
+}
+
+/** Turns the read responses into sources: a response whose URL is a `<link>` in the DOM
+ * becomes a link source (carrying its `rel` and `disabled` state), anything else an import source.
  *
  * Adopted sheets are intentionally not cross-referenced against these. A constructed
  * CSSStyleSheet has no URL, and its cssText is serialized by the browser (e.g. `#bb5555`
  * becomes `rgb(187, 85, 85)`), so a stylesheet fetched and then adopted into a shadow root
  * appears twice: once as a link/import and once as adopted. Matching on normalized content
  * would fix this, but real-world impact is expected to be low. */
-export async function cross_check_network_responses(
-	css_responses: ResponseLike[],
-	link_hrefs: Map<string, string | undefined>,
-): Promise<CSSSource[]> {
-	const deduplicator = create_deduplicator()
-	const sources: CSSSource[] = []
-
-	for (const response of css_responses) {
-		let css: string
-		try {
-			css = await response.text()
-		} catch {
-			continue
-		}
-		const response_url = response.url()
-
-		if (deduplicator.is_duplicate(response_url, css)) {
-			continue
-		}
-
-		if (link_hrefs.has(response_url)) {
-			sources.push({
+export function cross_check_network_responses(
+	stylesheets: FetchedStylesheet[],
+	links: Map<string, { rel: string; disabled?: string }>,
+): Array<CSSLinkSource | CSSImportSource> {
+	return stylesheets.map(({ url, css }) => {
+		const link = links.get(url)
+		if (link) {
+			return {
 				type: 'link',
-				href: response_url,
-				url: response_url,
-				rel: 'stylesheet',
+				href: url,
+				url,
+				rel: link.rel,
 				css,
-				disabled: link_hrefs.get(response_url),
-			} satisfies CSSLinkSource)
-		} else {
-			sources.push({
-				type: 'import',
-				href: response_url,
-				url: response_url,
-				css,
-			} satisfies CSSImportSource)
+				disabled: link.disabled,
+			} satisfies CSSLinkSource
 		}
-	}
-
-	return sources
+		return { type: 'import', href: url, url, css } satisfies CSSImportSource
+	})
 }
