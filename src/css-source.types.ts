@@ -15,6 +15,7 @@ export type CSSLinkSource = CSSSourceBase & {
 	/** The resolved absolute URL of the <link>'s href. */
 	href: string
 	rel: string
+	/** The media condition of the `<link>`, as written in its attribute. */
 	media?: string
 	disabled?: string
 }
@@ -23,6 +24,8 @@ export type CSSImportSource = CSSSourceBase & {
 	type: 'import'
 	/** The resolved absolute URL that the @import rule points at. */
 	href: string
+	/** The media condition of the `@import` rule, as the browser serializes it. Not found for a
+	 * rule inside a cross-origin stylesheet, whose rules the page cannot read. */
 	media?: string
 }
 

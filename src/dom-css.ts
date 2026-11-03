@@ -9,11 +9,15 @@ import type {
 import { read_page_css, type CSSWalkEntry } from './browser.ts'
 import type { OnScrapeError, PageLike } from './types.ts'
 
+/** The attributes of a `<link>` that the network response of its stylesheet does not carry. */
+export type LinkAttributes = { rel: string; disabled?: string; media?: string }
+
 /** What the DOM walk found: the `<link>`s the network cross-check needs to classify responses,
  * the links that had to be fetched again because no response was recorded, and every other
  * source, already in output order. */
 export interface DOMCSS {
-	links: Map<string, { rel: string; disabled?: string }>
+	links: Map<string, LinkAttributes>
+	import_media: Map<string, string>
 	fetched_links: CSSLinkSource[]
 	sources: CSSSource[]
 }
@@ -26,7 +30,8 @@ export async function collect_dom_css(
 	shipped_by_url: Record<string, string>,
 	on_error?: OnScrapeError,
 ): Promise<DOMCSS> {
-	const links = new Map<string, { rel: string; disabled?: string }>()
+	const links = new Map<string, LinkAttributes>()
+	const import_media = new Map<string, string>()
 	const fetched_links: CSSLinkSource[] = []
 	const inline_sources: CSSInlineSource[] = []
 	const style_sources: CSSStyleSource[] = []
@@ -46,7 +51,7 @@ export async function collect_dom_css(
 		const seen_adopted_css = new Set<string>()
 		for (const entry of entries) {
 			if (entry.type === 'link') {
-				links.set(entry.href, { rel: entry.rel, disabled: entry.disabled })
+				links.set(entry.href, { rel: entry.rel, disabled: entry.disabled, media: entry.media })
 				if (entry.fetched_css !== undefined) {
 					fetched_links.push({
 						type: 'link',
@@ -55,8 +60,11 @@ export async function collect_dom_css(
 						rel: entry.rel,
 						css: entry.fetched_css,
 						disabled: entry.disabled,
+						media: entry.media,
 					})
 				}
+			} else if (entry.type === 'import') {
+				import_media.set(entry.href, entry.media)
 			} else if (entry.type === 'inline') {
 				inline_sources.push({ type: 'inline', url: frame_url, css: entry.css })
 			} else if (entry.type === 'style') {
@@ -72,6 +80,7 @@ export async function collect_dom_css(
 
 	return {
 		links,
+		import_media,
 		fetched_links,
 		sources: [...adopted_sources, ...style_sources, ...cssom_sources, ...inline_sources],
 	}

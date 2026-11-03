@@ -1,0 +1,14 @@
+[
+	{
+		"type": "import",
+		"href": "/import/media-style-element/print.css",
+		"url": "/import/media-style-element/print.css",
+		"css": ".print {\n\tcolor: #000000;\n}\n",
+		"media": "print"
+	},
+	{
+		"type": "style",
+		"url": "/import/media-style-element/index.html",
+		"css": "\n\t\t\t@import url('print.css') print;\n\t\t"
+	}
+]

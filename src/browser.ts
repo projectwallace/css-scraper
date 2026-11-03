@@ -11,10 +11,12 @@ export type CSSWalkEntry =
 			/** Normalized: lowercased, whitespace collapsed, e.g. `stylesheet alternate`. */
 			rel: string
 			disabled?: string
+			media?: string
 			/** The stylesheet text, only for a loaded link that had no recorded network response
 			 * (cache hit, service worker, late tracking), obtained by fetching it again. */
 			fetched_css?: string
 	  }
+	| { type: 'import'; href: string; media: string }
 	| { type: 'inline'; css: string }
 	| { type: 'adopted'; css: string }
 	| { type: 'style'; css: string }
@@ -65,7 +67,36 @@ export async function read_page_css(
 		}
 	}
 
+	// Follows the @import rules of a sheet and the sheets they load. A cross-origin sheet does
+	// not expose its rules, so a condition inside one is not found.
+	function visit_imports(sheet: CSSStyleSheet) {
+		let rules: CSSRuleList
+		try {
+			rules = sheet.cssRules
+		} catch {
+			return
+		}
+		for (const rule of rules) {
+			if (!(rule instanceof CSSImportRule)) {
+				continue
+			}
+			const media = rule.media.mediaText
+			if (media) {
+				const href =
+					rule.styleSheet?.href ?? new URL(rule.href, sheet.href ?? document.baseURI).href
+				found.push({ type: 'import', href, media })
+			}
+			if (rule.styleSheet) {
+				visit_imports(rule.styleSheet)
+			}
+		}
+	}
+
 	async function visit(root: Document | ShadowRoot) {
+		for (const sheet of root.styleSheets) {
+			visit_imports(sheet)
+		}
+
 		for (const sheet of root.adoptedStyleSheets) {
 			if (seen_sheets.has(sheet)) {
 				continue
@@ -105,6 +136,7 @@ export async function read_page_css(
 						.filter(Boolean)
 						.join(' '),
 					disabled: link.getAttribute('disabled') ?? undefined,
+					media: link.getAttribute('media') ?? undefined,
 					fetched_css,
 				})
 				if (shipped_css !== undefined && link.sheet !== null) {

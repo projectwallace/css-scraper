@@ -36,6 +36,11 @@ describe('@import', () => {
 		expect(result).toEqual(load_expected_sources(server, 'import/media'))
 	})
 
+	test('@import with a media condition in a <style> element', async () => {
+		const result = await scrape_css(page, `${server.url}/import/media-style-element/index.html`)
+		expect(result).toEqual(load_expected_sources(server, 'import/media-style-element'))
+	})
+
 	test('@import with a supports() condition', async () => {
 		const result = await scrape_css(page, `${server.url}/import/supports/index.html`)
 		expect(result).toEqual(load_expected_sources(server, 'import/supports'))

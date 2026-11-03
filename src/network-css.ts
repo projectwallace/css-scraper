@@ -1,4 +1,5 @@
 import type { CSSImportSource, CSSLinkSource } from './css-source.types.ts'
+import type { LinkAttributes } from './dom-css.ts'
 import type { OnScrapeError, PageLike, ResponseLike } from './types.ts'
 
 /** Whether a response is a successful, CSS-typed stylesheet response. */
@@ -79,7 +80,8 @@ export async function read_responses(
 }
 
 /** Turns the read responses into sources: a response whose URL is a `<link>` in the DOM
- * becomes a link source (carrying its `rel` and `disabled` state), anything else an import source.
+ * becomes a link source (carrying its `rel`, `disabled` state and `media`), anything else an
+ * import source (carrying the `media` of its `@import` rule).
  *
  * Adopted sheets are intentionally not cross-referenced against these. A constructed
  * CSSStyleSheet has no URL, and its cssText is serialized by the browser (e.g. `#bb5555`
@@ -88,7 +90,8 @@ export async function read_responses(
  * would fix this, but real-world impact is expected to be low. */
 export function cross_check_network_responses(
 	stylesheets: FetchedStylesheet[],
-	links: Map<string, { rel: string; disabled?: string }>,
+	links: Map<string, LinkAttributes>,
+	import_media: Map<string, string>,
 ): Array<CSSLinkSource | CSSImportSource> {
 	return stylesheets.map(({ url, css }) => {
 		const link = links.get(url)
@@ -100,8 +103,15 @@ export function cross_check_network_responses(
 				rel: link.rel,
 				css,
 				disabled: link.disabled,
+				media: link.media,
 			} satisfies CSSLinkSource
 		}
-		return { type: 'import', href: url, url, css } satisfies CSSImportSource
+		return {
+			type: 'import',
+			href: url,
+			url,
+			css,
+			media: import_media.get(url),
+		} satisfies CSSImportSource
 	})
 }

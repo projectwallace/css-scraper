@@ -10,6 +10,7 @@
 		"type": "import",
 		"href": "/import/media/imported-dark.css",
 		"url": "/import/media/imported-dark.css",
-		"css": ".imported-dark {\n\tcolor: #994444;\n}\n"
+		"css": ".imported-dark {\n\tcolor: #994444;\n}\n",
+		"media": "(prefers-color-scheme: dark)"
 	}
 ]
