@@ -1,4 +1,5 @@
 import type { CSSImportSource, CSSLinkSource } from './css-source.types.ts'
+import type { LinkAttributes } from './dom-css.ts'
 import type { OnScrapeError, PageLike, ResponseLike } from './types.ts'
 
 /** Whether a response is a successful, CSS-typed stylesheet response. */
@@ -88,7 +89,8 @@ export async function read_responses(
  * would fix this, but real-world impact is expected to be low. */
 export function cross_check_network_responses(
 	stylesheets: FetchedStylesheet[],
-	links: Map<string, { rel: string; disabled?: string }>,
+	links: Map<string, LinkAttributes>,
+	import_media: Map<string, string>,
 ): Array<CSSLinkSource | CSSImportSource> {
 	return stylesheets.map(({ url, css }) => {
 		const link = links.get(url)
@@ -100,8 +102,15 @@ export function cross_check_network_responses(
 				rel: link.rel,
 				css,
 				disabled: link.disabled,
+				media: link.media,
 			} satisfies CSSLinkSource
 		}
-		return { type: 'import', href: url, url, css } satisfies CSSImportSource
+		return {
+			type: 'import',
+			href: url,
+			url,
+			css,
+			media: import_media.get(url),
+		} satisfies CSSImportSource
 	})
 }

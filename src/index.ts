@@ -56,7 +56,7 @@ export async function collect_css(
 	}
 
 	const dom = await collect_dom_css(page, shipped_by_url, options.on_error)
-	const network_sources = cross_check_network_responses(stylesheets, dom.links)
+	const network_sources = cross_check_network_responses(stylesheets, dom.links, dom.import_media)
 
 	return [...network_sources, ...dom.fetched_links, ...dom.sources]
 }
